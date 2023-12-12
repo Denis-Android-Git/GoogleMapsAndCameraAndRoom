@@ -15,7 +15,7 @@ import com.example.myapplication.presentation.Destinations
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 const val URI = "myapp://interesting.places"
 
@@ -65,6 +65,21 @@ class MyFirebaseMessage : FirebaseMessagingService() {
 
     @SuppressLint("UnspecifiedImmutableFlag", "MissingPermission")
     fun createNotification(context: Context) {
+        val idMainScreen = Destinations.MainScreen.routes
+
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            "$URI/$idMainScreen".toUri(),
+            context,
+            MainActivity::class.java
+        )
+
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getActivity(context, 0, deepLinkIntent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getActivity(context, 0, deepLinkIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        }
 
         val bigTextStyle = NotificationCompat.BigTextStyle()
         bigTextStyle.bigText("Нажмите на маркер и на его заголовок, чтобы посмотреть информацию об объекте")
@@ -74,6 +89,7 @@ class MyFirebaseMessage : FirebaseMessagingService() {
             .setContentTitle("Использование маркеров")
             .setStyle(bigTextStyle)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
 
