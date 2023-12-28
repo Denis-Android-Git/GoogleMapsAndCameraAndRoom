@@ -2,6 +2,7 @@ package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
 import android.location.Location
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -71,6 +72,7 @@ fun MapScreen() {
         if (it != null) {
             deviceLocation = LatLng(it.latitude, it.longitude)
             lastKnownLocation = it
+            Log.d("lastKnownLocation", "lastKnownLocation========${it.latitude}")
         }
     }
 
