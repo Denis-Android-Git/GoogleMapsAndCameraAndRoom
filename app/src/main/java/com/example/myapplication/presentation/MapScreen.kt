@@ -7,12 +7,23 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +37,13 @@ import com.example.myapplication.entity.Feature
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerInfoWindowContent
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
@@ -51,7 +68,8 @@ fun MapScreen() {
         )
     }
     val context = LocalContext.current
-    val fusedLocationProviderClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    val fusedLocationProviderClient =
+        remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val locationResult = fusedLocationProviderClient.lastLocation
     var deviceLocation by remember {
@@ -82,7 +100,8 @@ fun MapScreen() {
             position = CameraPosition.fromLatLngZoom(deviceLocation!!, 15f)
         }
         LaunchedEffect(Unit) {
-            val getPlacesUseCase = GetPlacesUseCase(lastKnownLocation!!.longitude, lastKnownLocation!!.latitude)
+            val getPlacesUseCase =
+                GetPlacesUseCase(lastKnownLocation!!.longitude, lastKnownLocation!!.latitude)
             places = getPlacesUseCase.execute()
         }
 
@@ -97,7 +116,8 @@ fun MapScreen() {
             ) {
                 for (place in places) {
 
-                    val position = LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
+                    val position =
+                        LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
 
                     MarkerInfoWindowContent(
                         state = MarkerState(position = position),
@@ -121,9 +141,12 @@ fun MapScreen() {
 
             val km = lastKnownLocation!!.speed.times(3.6).toInt()
 
+            Log.d("speed", "speed======${lastKnownLocation!!.speed}")
+
             Text(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd).padding(16.dp),
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
                 text = "$km km/h",
                 fontSize = 15.sp,
             )
@@ -135,12 +158,14 @@ fun MapScreen() {
                 }
                 val surfaceColor by animateColorAsState(
                     if (isExpanded)
-                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface, label = ""
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                    label = ""
                 )
 
                 Surface(
                     modifier = Modifier
-                        .animateContentSize().padding(1.dp)
+                        .animateContentSize()
+                        .padding(1.dp)
                         .align(Alignment.Center)
                         .clickable(
                             interactionSource = interactionSource,

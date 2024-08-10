@@ -28,10 +28,11 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCVEfFKxo8hRkKiTK8NuOp1ggDboh7Ii_o"/>
+            android:value="AIzaSyB7z_VkNvyY__WsJEEwCzT1uFDxMzI__es"/>
 
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:configChanges="orientation|uiMode|screenSize|fontScale"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">

@@ -1,12 +1,15 @@
 package com.example.myapplication
 
 import android.Manifest
+import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -48,6 +51,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -143,9 +148,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val deppLink = intent.data.toString()
+        Log.d("deppLink", "${intent.data.toString()}")
+        viewModel.setRoute(deppLink)
+    }
+
     @Composable
     fun Navigation() {
         val navController = rememberNavController()
+        val routeLink = viewModel.routeLink.collectAsState()
+
+        routeLink.value?.let {
+            navController.navigate(it)
+            viewModel.setRoute(null)
+        }
 
         NavHost(
             navController = navController, startDestination = Destinations.MainScreen.routes

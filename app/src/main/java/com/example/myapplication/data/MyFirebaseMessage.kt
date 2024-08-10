@@ -69,7 +69,7 @@ class MyFirebaseMessage : FirebaseMessagingService() {
 
         val deepLinkIntent = Intent(
             Intent.ACTION_VIEW,
-            "$URI/$idMainScreen".toUri(),
+            idMainScreen.toUri(),
             context,
             MainActivity::class.java
         )
