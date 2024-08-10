@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.Manifest
-import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -26,8 +26,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -46,7 +46,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,7 +67,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -130,6 +128,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -144,14 +143,14 @@ class MainActivity : ComponentActivity() {
         }
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
-//            Log.d("Registration token", it.result)
+            Log.d("Registration token", it.result)
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val deppLink = intent.data.toString()
-        Log.d("deppLink", "${intent.data.toString()}")
+        Log.d("deppLink", intent.data.toString())
         viewModel.setRoute(deppLink)
     }
 
@@ -223,8 +222,7 @@ class MainActivity : ComponentActivity() {
 
         Box(
             modifier = Modifier
-                .width(150.dp)
-                .height(150.dp)
+                .size(130.dp)
                 .combinedClickable(
                     onClick = {
                         val args = URLEncoder.encode(photo.uri, StandardCharsets.UTF_8.toString())
@@ -270,7 +268,7 @@ class MainActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(android.graphics.Color.parseColor("#1F585A")))
+                .background(Color(android.graphics.Color.parseColor("#1F585A"))),
         ) {
             LaunchedEffect(Unit) {
                 lifecycleScope.launch {
@@ -285,16 +283,17 @@ class MainActivity : ComponentActivity() {
                 TextContent()
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3), contentPadding = PaddingValues(2.dp)
+                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                    columns = GridCells.Fixed(3),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(horizontal = 40.dp)
                 ) {
                     items(photoList) { photo ->
-                        Column {
-                            Photo(
-                                photo = photo,
-                                navController = navController,
-                            )
-                            HorizontalDivider(thickness = 5.dp, color = Color.Transparent)
-                        }
+                        Photo(
+                            photo = photo,
+                            navController = navController,
+                        )
                     }
                 }
             }
@@ -569,14 +568,17 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val NOTIFICATION_ID = 1000
 
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         private val REQUEST_PERMISSIONS: Array<String> = buildList {
             add(Manifest.permission.CAMERA)
             add(Manifest.permission.ACCESS_COARSE_LOCATION)
             add(Manifest.permission.ACCESS_FINE_LOCATION)
+            add(Manifest.permission.POST_NOTIFICATIONS)
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }.toTypedArray()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkPermissions() {
         val isAllGranted = REQUEST_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED

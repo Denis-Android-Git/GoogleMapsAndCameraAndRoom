@@ -55,6 +55,7 @@ class MyFirebaseMessage : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+
     }
 
     private fun convertTime(timestamp: String?): String {
