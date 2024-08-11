@@ -4,11 +4,13 @@ import com.example.myapplication.data.PlacesRepository
 import com.example.myapplication.entity.Feature
 
 class GetPlacesUseCase(
-    lon: Double,
-    lat: Double
+    private val placesRepository: PlacesRepository
+
 ) {
-    private val placesRepository = PlacesRepository(lon, lat)
-    suspend fun execute(): List<Feature> {
-        return placesRepository.getPlacesDto()
+    suspend fun execute(
+        lon: Double,
+        lat: Double
+    ): List<Feature> {
+        return placesRepository.getPlacesDto(lon, lat)
     }
 }

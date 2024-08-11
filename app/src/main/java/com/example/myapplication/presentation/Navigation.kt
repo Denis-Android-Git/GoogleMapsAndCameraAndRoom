@@ -15,11 +15,12 @@ import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.URI
 import com.example.myapplication.entity.Photo
 import com.example.myapplication.viewmodel.MyViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun Navigation(
-    viewModel: MyViewModel,
+    viewModel: MyViewModel = koinViewModel(),
     camera: Camera,
     deleteList: SnapshotStateList<Photo>,
     previewView: PreviewView

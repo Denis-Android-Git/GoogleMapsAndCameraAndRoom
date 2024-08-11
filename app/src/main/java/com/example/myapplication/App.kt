@@ -8,21 +8,25 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.myapplication.data.AppDataBase
+import com.example.myapplication.di.module
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
 const val NOTIFICATION_CHANNEL_ID = "test_channel_id"
 
 class App : Application() {
-    val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            AppDataBase::class.java,
-            "db"
-        ).fallbackToDestructiveMigration().build()
-    }
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@App)
+            modules(module)
+        }
+
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(
             //!BuildConfig.DEBUG
             true
@@ -40,7 +44,8 @@ class App : Application() {
         val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 }

@@ -109,4 +109,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation 'com.google.firebase:firebase-messaging'
+
+    //Koin
+    implementation "io.insert-koin:koin-androidx-compose:3.5.6"
+
 }

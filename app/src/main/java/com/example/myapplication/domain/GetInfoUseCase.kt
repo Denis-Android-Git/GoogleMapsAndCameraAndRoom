@@ -4,11 +4,12 @@ import com.example.myapplication.data.DetailInfoDto
 import com.example.myapplication.data.InfoRepository
 
 class GetInfoUseCase(
-    xid: String
+    private val infoRepository: InfoRepository
 ) {
-    private val infoRepository = InfoRepository(xid)
 
-    suspend fun execute(): DetailInfoDto {
-        return infoRepository.getInfoDto()
+    suspend fun execute(
+        xid: String
+    ): DetailInfoDto {
+        return infoRepository.getInfoDto(xid)
     }
 }

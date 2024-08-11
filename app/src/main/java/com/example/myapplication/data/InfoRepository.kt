@@ -1,10 +1,11 @@
 package com.example.myapplication.data
 
 class InfoRepository(
-    private val xid: String
+    private val retrofitAndApi: RetrofitAndApi.PlacesApi
 ) {
-    private val retrofitAndApi = RetrofitAndApi()
-    suspend fun getInfoDto(): DetailInfoDto  {
-        return retrofitAndApi.api.getInfo(xid)
+    suspend fun getInfoDto(
+        xid: String
+    ): DetailInfoDto {
+        return retrofitAndApi.getInfo(xid)
     }
 }

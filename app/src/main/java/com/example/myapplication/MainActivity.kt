@@ -10,36 +10,28 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.data.Camera
 import com.example.myapplication.entity.Photo
 import com.example.myapplication.presentation.Navigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MyViewModel
 import com.google.firebase.messaging.FirebaseMessaging
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 const val FILE_NAME = "dd-M-yyyy"
 
-@Suppress("UNCHECKED_CAST")
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MyViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val photoDao = (application as App).db.photoDao()
-                return MyViewModel(photoDao) as T
-            }
-        }
-    }
-    private lateinit var camera: Camera
+    private val viewModel: MyViewModel by viewModel()
     private lateinit var previewView: PreviewView
+    private val camera: Camera by inject { parametersOf(this, previewView) }
     private val launcher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
             if (map.values.all { it }) {
@@ -54,14 +46,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         previewView = PreviewView(this)
 
-        camera = Camera(
-            contentResolver = contentResolver,
-            context = this,
-            lifecycleOwner = this,
-            viewModel = viewModel,
-            previewView = previewView
-        )
-
         checkPermissions()
 
         setContent {
@@ -72,7 +56,6 @@ class MainActivity : ComponentActivity() {
                 Navigation(
                     camera = camera,
                     deleteList = deleteList,
-                    viewModel = viewModel,
                     previewView = previewView
                 )
             }

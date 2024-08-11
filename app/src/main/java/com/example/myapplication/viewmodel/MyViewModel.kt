@@ -2,7 +2,7 @@ package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.PhotoDao
+import com.example.myapplication.data.AppDataBase
 import com.example.myapplication.entity.Photo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MyViewModel(private val photoDao: PhotoDao) : ViewModel() {
+class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
 
     private var _routeLink = MutableStateFlow<String?>(null)
     val routeLink = _routeLink.asStateFlow()
@@ -19,7 +19,7 @@ class MyViewModel(private val photoDao: PhotoDao) : ViewModel() {
         _routeLink.value = route
     }
 
-    val allPhotos = this.photoDao.getAll()
+    val allPhotos = this.appDataBase.photoDao().getAll()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -28,7 +28,7 @@ class MyViewModel(private val photoDao: PhotoDao) : ViewModel() {
 
     fun onPhotoMake(newUri: String, newDate: String) {
         viewModelScope.launch {
-            photoDao.upsertPhoto(
+            appDataBase.photoDao().upsertPhoto(
                 Photo(
                     uri = newUri,
                     date = newDate
@@ -40,14 +40,14 @@ class MyViewModel(private val photoDao: PhotoDao) : ViewModel() {
     fun onDeleteClick() {
         viewModelScope.launch {
             allPhotos.value.let {
-                photoDao.deleteAllPhotos(it)
+                appDataBase.photoDao().deleteAllPhotos(it)
             }
         }
     }
 
     fun deleteOnePhoto(photo: Photo) {
         viewModelScope.launch {
-            photoDao.deleteOnePhoto(photo)
+            appDataBase.photoDao().deleteOnePhoto(photo)
         }
     }
 }

@@ -19,10 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.DetailInfoDto
-import com.example.myapplication.domain.GetInfoUseCase
-import com.example.myapplication.domain.GetPlacesUseCase
-import com.example.myapplication.entity.Feature
+import com.example.myapplication.viewmodel.MapViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -44,13 +41,14 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("MissingPermission")
 @Composable
-fun MapScreen() {
-
-    val coroutineScope = rememberCoroutineScope()
+fun MapScreen(
+    mapViewModel: MapViewModel = koinViewModel()
+) {
+    val info by mapViewModel.detailInfo.collectAsState()
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -78,12 +76,7 @@ fun MapScreen() {
     var lastKnownLocation by remember {
         mutableStateOf<Location?>(null)
     }
-    var places by remember {
-        mutableStateOf(emptyList<Feature>())
-    }
-    var info by remember {
-        mutableStateOf<DetailInfoDto?>(null)
-    }
+
     var showText by remember { mutableStateOf(false) }
 
     locationResult.addOnSuccessListener {
@@ -99,11 +92,12 @@ fun MapScreen() {
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(deviceLocation!!, 15f)
         }
-        LaunchedEffect(Unit) {
-            val getPlacesUseCase =
-                GetPlacesUseCase(lastKnownLocation!!.longitude, lastKnownLocation!!.latitude)
-            places = getPlacesUseCase.execute()
+
+        LaunchedEffect(key1 = Unit) {
+            mapViewModel.getPlaces(lastKnownLocation!!.longitude, lastKnownLocation!!.latitude)
         }
+
+        val places by mapViewModel.places.collectAsState()
 
         Box(
             modifier = Modifier
@@ -122,11 +116,8 @@ fun MapScreen() {
                     MarkerInfoWindowContent(
                         state = MarkerState(position = position),
                         onInfoWindowClick = {
-                            val getInfoUseCase = GetInfoUseCase(place.properties.xid)
-                            coroutineScope.launch {
-                                info = getInfoUseCase.execute()
-                                showText = true
-                            }
+                            mapViewModel.getInfo(place.properties.xid)
+                            showText = true
                         },
                         onInfoWindowClose = {
                             showText = false
