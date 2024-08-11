@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation
+package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,12 +42,6 @@ class MyViewModel(private val photoDao: PhotoDao) : ViewModel() {
             allPhotos.value.let {
                 photoDao.deleteAllPhotos(it)
             }
-        }
-    }
-
-    fun deleteSelectedPhotos(list: List<Photo>) {
-        viewModelScope.launch {
-            photoDao.deleteAllPhotos(list)
         }
     }
 

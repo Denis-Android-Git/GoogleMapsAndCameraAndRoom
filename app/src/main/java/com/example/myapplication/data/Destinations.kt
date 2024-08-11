@@ -1,4 +1,4 @@
-package com.example.myapplication.presentation
+package com.example.myapplication.data
 
 sealed class Destinations(val routes: String) {
     data object MainScreen : Destinations("main_screen")

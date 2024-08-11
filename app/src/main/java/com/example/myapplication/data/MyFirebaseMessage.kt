@@ -11,7 +11,6 @@ import androidx.core.net.toUri
 import com.example.myapplication.MainActivity
 import com.example.myapplication.NOTIFICATION_CHANNEL_ID
 import com.example.myapplication.R
-import com.example.myapplication.presentation.Destinations
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.text.SimpleDateFormat
