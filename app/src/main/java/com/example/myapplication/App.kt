@@ -6,8 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.room.Room
-import com.example.myapplication.data.AppDataBase
 import com.example.myapplication.di.module
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.koin.android.ext.koin.androidContext

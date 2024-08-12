@@ -1,8 +1,8 @@
 package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
-import android.location.Location
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -27,11 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.viewmodel.MapViewModel
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -39,16 +37,23 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import org.koin.androidx.compose.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
     mapViewModel: MapViewModel = koinViewModel()
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
+    val places by mapViewModel.places.collectAsState()
+    val location by mapViewModel.location.collectAsState()
+    val speed by mapViewModel.speed.collectAsState()
+
+    //mapViewModel.getLocation()
+
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -65,39 +70,38 @@ fun MapScreen(
             )
         )
     }
-    val context = LocalContext.current
-    val fusedLocationProviderClient =
-        remember { LocationServices.getFusedLocationProviderClient(context) }
+    //val context = LocalContext.current
 
-    val locationResult = fusedLocationProviderClient.lastLocation
-    var deviceLocation by remember {
-        mutableStateOf<LatLng?>(null)
-    }
-    var lastKnownLocation by remember {
-        mutableStateOf<Location?>(null)
-    }
+    //val fusedLocationProviderClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    //val locationResult = fusedLocationProviderClient.lastLocation
+
+//    var deviceLocation by remember {
+//        mutableStateOf<LatLng?>(null)
+//    }
+//    var lastKnownLocation by remember {
+//        mutableStateOf<Location?>(null)
+//    }
 
     var showText by remember { mutableStateOf(false) }
 
-    locationResult.addOnSuccessListener {
-        if (it != null) {
-            deviceLocation = LatLng(it.latitude, it.longitude)
-            lastKnownLocation = it
-            Log.d("lastKnownLocation", "lastKnownLocation========${it.latitude}")
-        }
-    }
+//    locationResult.addOnSuccessListener {
+//        if (it != null) {
+//            deviceLocation = LatLng(it.latitude, it.longitude)
+//            lastKnownLocation = it
+//            Log.d("lastKnownLocation", "lastKnownLocation========${it.latitude}")
+//        }
+//    }
 
-    if (deviceLocation != null && lastKnownLocation != null) {
+    if (location != null) {
 
         val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(deviceLocation!!, 15f)
+            position = CameraPosition.fromLatLngZoom(location!!, 15f)
         }
 
         LaunchedEffect(key1 = Unit) {
-            mapViewModel.getPlaces(lastKnownLocation!!.longitude, lastKnownLocation!!.latitude)
+            mapViewModel.getPlaces(location!!.longitude, location!!.latitude)
         }
-
-        val places by mapViewModel.places.collectAsState()
 
         Box(
             modifier = Modifier
@@ -114,7 +118,7 @@ fun MapScreen(
                         LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
 
                     MarkerInfoWindowContent(
-                        state = MarkerState(position = position),
+                        state = rememberMarkerState(position = position),
                         onInfoWindowClick = {
                             mapViewModel.getInfo(place.properties.xid)
                             showText = true
@@ -124,22 +128,18 @@ fun MapScreen(
                         }
                     ) {
                         Column {
-                            Text(it.title ?: place.properties.name, color = Color.Red)
+                            Text(place.properties.name, color = Color.Red)
                         }
                     }
                 }
             }
 
-            val km = lastKnownLocation!!.speed.times(3.6).toInt()
-
-            Log.d("speed", "speed======${lastKnownLocation!!.speed}")
-
             Text(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
-                text = "$km km/h",
-                fontSize = 15.sp,
+                text = "$speed km/h",
+                fontSize = 25.sp,
             )
             if (info != null && showText) {
                 val wikipediaText = info?.wikipedia_extracts?.text ?: "Нет информации"

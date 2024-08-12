@@ -30,8 +30,11 @@ const val FILE_NAME = "dd-M-yyyy"
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MyViewModel by viewModel()
+
     private lateinit var previewView: PreviewView
+
     private val camera: Camera by inject { parametersOf(this, previewView) }
+
     private val launcher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
             if (map.values.all { it }) {
@@ -69,7 +72,6 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val deppLink = intent.data.toString()
-        Log.d("deppLink", intent.data.toString())
         viewModel.setRoute(deppLink)
     }
 

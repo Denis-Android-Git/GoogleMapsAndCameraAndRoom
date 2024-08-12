@@ -1,7 +1,10 @@
 package com.example.myapplication.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation.NavType
@@ -18,6 +21,7 @@ import com.example.myapplication.viewmodel.MyViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Navigation(
     viewModel: MyViewModel = koinViewModel(),
@@ -28,8 +32,8 @@ fun Navigation(
     val navController = rememberNavController()
     val routeLink = viewModel.routeLink.collectAsState()
 
-    routeLink.value?.let {
-        navController.navigate(it)
+    LaunchedEffect(key1 = routeLink.value) {
+        routeLink.value?.let { navController.navigate(it) }
         viewModel.setRoute(null)
     }
 

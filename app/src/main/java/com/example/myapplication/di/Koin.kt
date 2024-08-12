@@ -7,12 +7,18 @@ import com.example.myapplication.data.AppDataBase
 import com.example.myapplication.data.BASE_URL
 import com.example.myapplication.data.Camera
 import com.example.myapplication.data.InfoRepository
+import com.example.myapplication.data.LocationService
 import com.example.myapplication.data.PlacesRepository
 import com.example.myapplication.data.RetrofitAndApi.PlacesApi
 import com.example.myapplication.domain.GetInfoUseCase
+import com.example.myapplication.domain.GetLocationUseCase
 import com.example.myapplication.domain.GetPlacesUseCase
+import com.example.myapplication.domain.GetsSpeedUseCase
+import com.example.myapplication.domain.ILocationService
 import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
@@ -22,6 +28,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val module = module {
+    single<FusedLocationProviderClient> {
+        LocationServices.getFusedLocationProviderClient(
+            androidContext()
+        )
+    }
+    single<ILocationService> {
+        LocationService(androidContext(), get())
+    }
+
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -57,8 +72,10 @@ val module = module {
     factory { PlacesRepository(get()) }
     factory { GetPlacesUseCase(get()) }
     factory { GetInfoUseCase(get()) }
+    factory { GetLocationUseCase(get()) }
+    factory { GetsSpeedUseCase(get()) }
 
     viewModel { MyViewModel(get()) }
-    viewModel { MapViewModel(get(), get()) }
+    viewModel { MapViewModel(get(), get(), get(), get()) }
 
 }
