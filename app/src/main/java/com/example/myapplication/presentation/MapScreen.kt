@@ -51,6 +51,7 @@ fun MapScreen(
     val places by mapViewModel.places.collectAsState()
     val location by mapViewModel.location.collectAsState()
     val speed by mapViewModel.speed.collectAsState()
+    val error by mapViewModel.error.collectAsState()
 
     //mapViewModel.getLocation()
 
@@ -134,13 +135,18 @@ fun MapScreen(
                 }
             }
 
-            Text(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
+            TextComponent(
                 text = "$speed km/h",
-                fontSize = 25.sp,
+                modifier = Modifier.align(Alignment.BottomEnd)
             )
+
+            error?.let {
+                TextComponent(
+                    text = it,
+                    modifier = Modifier.align(Alignment.TopStart)
+                )
+            }
+
             if (info != null && showText) {
                 val wikipediaText = info?.wikipedia_extracts?.text ?: "Нет информации"
                 val interactionSource = remember { MutableInteractionSource() }

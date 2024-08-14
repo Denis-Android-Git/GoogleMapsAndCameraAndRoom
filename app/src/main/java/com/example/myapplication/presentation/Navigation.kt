@@ -18,13 +18,12 @@ import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.URI
 import com.example.myapplication.entity.Photo
 import com.example.myapplication.viewmodel.MyViewModel
-import org.koin.androidx.compose.koinViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Navigation(
-    viewModel: MyViewModel = koinViewModel(),
+    viewModel: MyViewModel,
     camera: Camera,
     deleteList: SnapshotStateList<Photo>,
     previewView: PreviewView

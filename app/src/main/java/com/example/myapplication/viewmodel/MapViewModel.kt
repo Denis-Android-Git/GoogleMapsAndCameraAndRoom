@@ -34,6 +34,9 @@ class MapViewModel(
     private var _speed = MutableStateFlow<Int?>(null)
     val speed = _speed.asStateFlow()
 
+    private var _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
     init {
         viewModelScope.launch {
             getsSpeedUseCase.invoke().collect {
@@ -49,31 +52,17 @@ class MapViewModel(
             }
         }
     }
-//
-//    @RequiresApi(Build.VERSION_CODES.S)
-//    fun getSpeed() {
-//        viewModelScope.launch {
-//            getsSpeedUseCase.invoke().collect {
-//                _speed.value = it
-//            }
-//        }
-//    }
-//
-//    @RequiresApi(Build.VERSION_CODES.S)
-//    fun getLocation() {
-//        viewModelScope.launch {
-//            getLocationUseCase.invoke().collect {
-//                _location.value = it
-//            }
-//        }
-//    }
 
     fun getPlaces(
         lon: Double,
         lat: Double
     ) {
         viewModelScope.launch {
-            _places.value = getPlacesUseCase.execute(lon, lat)
+            try {
+                _places.value = getPlacesUseCase.execute(lon, lat)
+            } catch (e: Exception) {
+                _error.value = "No connection"
+            }
         }
     }
 
@@ -81,7 +70,11 @@ class MapViewModel(
         xid: String
     ) {
         viewModelScope.launch {
-            _detailInfo.value = getInfoUseCase.execute(xid)
+            try {
+                _detailInfo.value = getInfoUseCase.execute(xid)
+            } catch (e: Exception) {
+                _error.value = "No connection"
+            }
         }
     }
 }

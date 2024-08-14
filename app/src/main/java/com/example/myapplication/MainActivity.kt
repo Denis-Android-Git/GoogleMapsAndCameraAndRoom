@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                     mutableStateListOf<Photo>()
                 }
                 Navigation(
+                    viewModel = viewModel,
                     camera = camera,
                     deleteList = deleteList,
                     previewView = previewView
