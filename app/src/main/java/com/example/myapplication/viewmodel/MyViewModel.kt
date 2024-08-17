@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.AppDataBase
 import com.example.myapplication.entity.Photo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +16,10 @@ class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
     private var _routeLink = MutableStateFlow<String?>(null)
     val routeLink = _routeLink.asStateFlow()
 
-    fun setRoute(route: String?) {
+    suspend fun setRoute(route: String?) {
         _routeLink.value = route
+        delay(50)
+        _routeLink.value = null
     }
 
     val allPhotos = this.appDataBase.photoDao().getAll()

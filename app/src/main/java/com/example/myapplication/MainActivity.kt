@@ -21,6 +21,9 @@ import com.example.myapplication.presentation.Navigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MyViewModel
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -32,6 +35,8 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MyViewModel by viewModel()
 
     private lateinit var previewView: PreviewView
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val camera: Camera by inject { parametersOf(this, previewView) }
 
@@ -73,7 +78,9 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val deppLink = intent.data.toString()
-        viewModel.setRoute(deppLink)
+        scope.launch {
+            viewModel.setRoute(deppLink)
+        }
     }
 
     companion object {

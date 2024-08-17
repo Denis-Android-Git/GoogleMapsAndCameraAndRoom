@@ -32,7 +32,6 @@ fun Navigation(
 
     if (routeLink.value != null) {
         routeLink.value?.let { navController.navigate(it) }
-        viewModel.setRoute(null)
     }
 
     NavHost(
