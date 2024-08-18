@@ -194,7 +194,9 @@ fun MapScreen(
                             ) {
                                 val state = painter.state
                                 if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                                    CircularProgressIndicator()
+                                    CircularProgressIndicator(
+                                        color = Color.White
+                                    )
                                 } else {
                                     SubcomposeAsyncImageContent()
                                 }
