@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +19,6 @@ import com.example.myapplication.entity.Photo
 import com.example.myapplication.presentation.Navigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MyViewModel
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,9 +68,9 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener {
-            Log.d("Registration token", it.result)
-        }
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+//            Log.d("Registration token", it.result)
+//        }
     }
 
     override fun onNewIntent(intent: Intent) {

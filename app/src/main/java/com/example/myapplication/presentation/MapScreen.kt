@@ -3,6 +3,7 @@ package com.example.myapplication.presentation
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
@@ -184,7 +185,7 @@ fun MapScreen(
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        if (isExpanded) {
+                        AnimatedVisibility(isExpanded) {
                             SubcomposeAsyncImage(
                                 modifier = Modifier
                                     .padding(start = 16.dp, top = 16.dp)
