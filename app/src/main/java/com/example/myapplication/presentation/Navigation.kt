@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation.NavType
@@ -30,7 +31,7 @@ fun Navigation(
     val navController = rememberNavController()
     val routeLink = viewModel.routeLink.collectAsState()
 
-    if (routeLink.value != null) {
+    LaunchedEffect (routeLink.value != null) {
         routeLink.value?.let { navController.navigate(it) }
     }
 

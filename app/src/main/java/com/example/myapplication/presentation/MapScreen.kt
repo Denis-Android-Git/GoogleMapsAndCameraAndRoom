@@ -11,9 +11,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
@@ -116,6 +118,7 @@ fun MapScreen(
                 .fillMaxSize()
         ) {
             GoogleMap(
+                contentPadding = PaddingValues(top = 20.dp),
                 properties = properties,
                 uiSettings = uiSettings,
                 cameraPositionState = cameraPositionState
@@ -144,7 +147,9 @@ fun MapScreen(
 
             TextComponent(
                 text = "$speed km/h",
-                modifier = Modifier.align(Alignment.BottomEnd)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .systemBarsPadding()
             )
 
             error?.let {
@@ -191,7 +196,8 @@ fun MapScreen(
                                     .padding(start = 16.dp, top = 16.dp)
                                     .clip(RoundedCornerShape(16.dp))
                                     .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
-                                model = info!!.preview.source, contentDescription = null
+                                model = info?.preview?.source,
+                                contentDescription = null
                             ) {
                                 val state = painter.state
                                 if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {

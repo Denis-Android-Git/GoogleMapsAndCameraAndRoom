@@ -1,17 +1,21 @@
 package com.example.myapplication.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.entity.Photo
 import java.net.URLEncoder
@@ -25,9 +29,7 @@ fun PhotoItem(
     navController: NavController,
     deleteList: MutableList<Photo>
 ) {
-    val painter = rememberAsyncImagePainter(model = photo.uri)
-
-    Box(
+    SubcomposeAsyncImage(
         modifier = Modifier
             .size(130.dp)
             .combinedClickable(
@@ -45,12 +47,19 @@ fun PhotoItem(
                     }
                 }
             )
+            .clip(RoundedCornerShape(16.dp))
+            .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
+        model = photo.uri,
+        contentDescription = null
     ) {
-        Image(
-            painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-        )
+        val state = painter.state
+        if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+            CircularProgressIndicator(
+                color = Color.White
+            )
+        } else {
+            SubcomposeAsyncImageContent()
+        }
         if (deleteList.contains(photo)) {
             Checkbox(
                 checked = true, onCheckedChange = null
