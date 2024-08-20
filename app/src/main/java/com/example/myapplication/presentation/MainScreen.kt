@@ -70,7 +70,6 @@ fun MainScreen(
                 TextContent()
             } else {
                 LazyVerticalGrid(
-                    //modifier = Modifier.padding(horizontal = 20.dp),
                     columns = GridCells.Fixed(3),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
