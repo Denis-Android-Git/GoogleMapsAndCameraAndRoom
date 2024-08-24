@@ -59,11 +59,8 @@ fun MapScreen(
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
     val places by mapViewModel.places.collectAsState()
-    val location by mapViewModel.location.collectAsState()
     val speed by mapViewModel.speed.collectAsState()
     val error by mapViewModel.error.collectAsState()
-
-    //mapViewModel.getLocation()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -81,147 +78,125 @@ fun MapScreen(
             )
         )
     }
-    //val context = LocalContext.current
-
-    //val fusedLocationProviderClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-
-    //val locationResult = fusedLocationProviderClient.lastLocation
-
-//    var deviceLocation by remember {
-//        mutableStateOf<LatLng?>(null)
-//    }
-//    var lastKnownLocation by remember {
-//        mutableStateOf<Location?>(null)
-//    }
 
     var showText by remember { mutableStateOf(false) }
+    val location by mapViewModel.location.collectAsState()
+    val cameraPositionState = rememberCameraPositionState()
 
-//    locationResult.addOnSuccessListener {
-//        if (it != null) {
-//            deviceLocation = LatLng(it.latitude, it.longitude)
-//            lastKnownLocation = it
-//            Log.d("lastKnownLocation", "lastKnownLocation========${it.latitude}")
-//        }
-//    }
-
-    if (location != null) {
-
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(location!!, 15f)
-        }
-
-        LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = location) {
+        if (location != null) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
             mapViewModel.getPlaces(location!!.longitude, location!!.latitude)
         }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        GoogleMap(
+            contentPadding = PaddingValues(top = 20.dp),
+            properties = properties,
+            uiSettings = uiSettings,
+            cameraPositionState = cameraPositionState
         ) {
-            GoogleMap(
-                contentPadding = PaddingValues(top = 20.dp),
-                properties = properties,
-                uiSettings = uiSettings,
-                cameraPositionState = cameraPositionState
-            ) {
-                for (place in places) {
+            for (place in places) {
 
-                    val position =
-                        LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
+                val position =
+                    LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
 
-                    MarkerInfoWindowContent(
-                        state = rememberMarkerState(position = position),
-                        onInfoWindowClick = {
-                            mapViewModel.getInfo(place.properties.xid)
-                            showText = true
-                        },
-                        onInfoWindowClose = {
-                            showText = false
-                        }
-                    ) {
-                        Column {
-                            Text(place.properties.name, color = Color.Red)
-                        }
+                MarkerInfoWindowContent(
+                    state = rememberMarkerState(position = position),
+                    onInfoWindowClick = {
+                        mapViewModel.getInfo(place.properties.xid)
+                        showText = true
+                    },
+                    onInfoWindowClose = {
+                        showText = false
+                    }
+                ) {
+                    Column {
+                        Text(place.properties.name, color = Color.Red)
                     }
                 }
             }
+        }
 
+        TextComponent(
+            text = if (speed == null) "0 km/h" else "$speed km/h",
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .systemBarsPadding()
+        )
+
+        error?.let {
             TextComponent(
-                text = "$speed km/h",
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .systemBarsPadding()
+                text = it,
+                modifier = Modifier.align(Alignment.TopStart)
             )
+        }
+        if (info != null && showText) {
 
-            error?.let {
-                TextComponent(
-                    text = it,
-                    modifier = Modifier.align(Alignment.TopStart)
-                )
+            val wikipediaText = info?.wikipedia_extracts?.text ?: "Нет информации"
+            val interactionSource = remember { MutableInteractionSource() }
+            var isExpanded by remember {
+                mutableStateOf(false)
             }
-            if (info != null && showText) {
-
-                val wikipediaText = info?.wikipedia_extracts?.text ?: "Нет информации"
-                val interactionSource = remember { MutableInteractionSource() }
-                var isExpanded by remember {
-                    mutableStateOf(false)
-                }
-                val surfaceColor by animateColorAsState(
-                    if (isExpanded)
-                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                    label = ""
-                )
-                Surface(
-                    modifier = Modifier
-                        .animateContentSize()
-                        .padding(1.dp)
-                        .align(Alignment.Center)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(
-                                bounded = true,
-                                //radius = 250.dp,
-                                color = Color.DarkGray
-                            )
-                        ) { isExpanded = !isExpanded },
-                    shape = MaterialTheme.shapes.medium,
-                    shadowElevation = 5.dp,
-                    color = surfaceColor,
+            val surfaceColor by animateColorAsState(
+                if (isExpanded)
+                    MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                label = ""
+            )
+            Surface(
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(1.dp)
+                    .align(Alignment.Center)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = rememberRipple(
+                            bounded = true,
+                            //radius = 250.dp,
+                            color = Color.DarkGray
+                        )
+                    ) { isExpanded = !isExpanded },
+                shape = MaterialTheme.shapes.medium,
+                shadowElevation = 5.dp,
+                color = surfaceColor,
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        AnimatedVisibility(isExpanded) {
-                            SubcomposeAsyncImage(
-                                modifier = Modifier
-                                    .padding(start = 16.dp, top = 16.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
-                                model = info?.preview?.source,
-                                contentDescription = null
-                            ) {
-                                val state = painter.state
-                                if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                                    CircularProgressIndicator(
-                                        color = Color.White
-                                    )
-                                } else {
-                                    SubcomposeAsyncImageContent()
-                                }
+                    AnimatedVisibility(isExpanded) {
+                        SubcomposeAsyncImage(
+                            modifier = Modifier
+                                .padding(start = 16.dp, top = 16.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
+                            model = info?.preview?.source,
+                            contentDescription = null
+                        ) {
+                            val state = painter.state
+                            if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+                                CircularProgressIndicator(
+                                    color = Color.White
+                                )
+                            } else {
+                                SubcomposeAsyncImageContent()
                             }
                         }
-
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(16.dp),
-                            maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                            text = wikipediaText,
-                            fontSize = 15.sp,
-                            color = if (isExpanded) Color.White else Color.Black,
-                            style = MaterialTheme.typography.bodySmall
-                        )
                     }
+
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(16.dp),
+                        maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                        text = wikipediaText,
+                        fontSize = 15.sp,
+                        color = if (isExpanded) Color.White else Color.Black,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }

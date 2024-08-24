@@ -154,13 +154,14 @@ fun MainScreen(
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
+                    .padding(6.dp)
                     .systemBarsPadding()
                     .size(48.dp)
-                    .background(Color.White, shape = CircleShape)
+                    .background(Color.Black, shape = CircleShape)
             ) {
                 Icon(imageVector = Icons.Default.Delete,
                     contentDescription = "Delete all photos",
-                    tint = Color.Black,
+                    tint = Color.White,
                     modifier = Modifier
                         .size(30.dp)
                         .align(Alignment.Center)

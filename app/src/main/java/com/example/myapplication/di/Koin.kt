@@ -1,5 +1,7 @@
 package com.example.myapplication.di
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.Room
@@ -15,6 +17,7 @@ import com.example.myapplication.domain.GetLocationUseCase
 import com.example.myapplication.domain.GetPlacesUseCase
 import com.example.myapplication.domain.GetsSpeedUseCase
 import com.example.myapplication.domain.ILocationService
+import com.example.myapplication.domain.UpdateLocationUseCase
 import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -27,6 +30,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@RequiresApi(Build.VERSION_CODES.S)
 val module = module {
     single<FusedLocationProviderClient> {
         LocationServices.getFusedLocationProviderClient(
@@ -74,6 +78,7 @@ val module = module {
     factory { GetInfoUseCase(get()) }
     factory { GetLocationUseCase(get()) }
     factory { GetsSpeedUseCase(get()) }
+    factory { UpdateLocationUseCase(get()) }
 
     viewModel { MyViewModel(get()) }
     viewModel { MapViewModel(get(), get(), get(), get()) }

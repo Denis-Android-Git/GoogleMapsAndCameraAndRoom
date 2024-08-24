@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.DetailInfoDto
 import com.example.myapplication.domain.GetInfoUseCase
-import com.example.myapplication.domain.GetLocationUseCase
 import com.example.myapplication.domain.GetPlacesUseCase
 import com.example.myapplication.domain.GetsSpeedUseCase
+import com.example.myapplication.domain.UpdateLocationUseCase
 import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 class MapViewModel(
     private val getPlacesUseCase: GetPlacesUseCase,
     private val getInfoUseCase: GetInfoUseCase,
-    private val getLocationUseCase: GetLocationUseCase,
-    private val getsSpeedUseCase: GetsSpeedUseCase
+    private val getsSpeedUseCase: GetsSpeedUseCase,
+    private val updateLocationUseCase: UpdateLocationUseCase
 ) : ViewModel() {
     private var _places = MutableStateFlow<List<Feature>>(emptyList())
     val places = _places.asStateFlow()
@@ -47,7 +47,7 @@ class MapViewModel(
 
     init {
         viewModelScope.launch {
-            getLocationUseCase.invoke().collect {
+            updateLocationUseCase.invoke().collect {
                 _location.value = it
             }
         }
