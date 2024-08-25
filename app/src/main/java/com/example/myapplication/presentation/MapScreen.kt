@@ -81,11 +81,13 @@ fun MapScreen(
 
     var showText by remember { mutableStateOf(false) }
     val location by mapViewModel.location.collectAsState()
-    val cameraPositionState = rememberCameraPositionState()
 
-    LaunchedEffect(key1 = location) {
-        if (location != null) {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
+    val cameraPositionState = rememberCameraPositionState()
+    if (location != null) {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
+    }
+    if (location != null) {
+        LaunchedEffect(key1 = Unit) {
             mapViewModel.getPlaces(location!!.longitude, location!!.latitude)
         }
     }
