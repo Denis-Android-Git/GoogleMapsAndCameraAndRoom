@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +45,7 @@ import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -49,6 +53,8 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -61,6 +67,8 @@ fun MapScreen(
     val places by mapViewModel.places.collectAsState()
     val speed by mapViewModel.speed.collectAsState()
     val error by mapViewModel.error.collectAsState()
+    val location by mapViewModel.location.collectAsState()
+    val scope = rememberCoroutineScope()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -80,15 +88,26 @@ fun MapScreen(
     }
 
     var showText by remember { mutableStateOf(false) }
-    val location by mapViewModel.location.collectAsState()
 
     val cameraPositionState = rememberCameraPositionState()
+
     if (location != null) {
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
+        LaunchedEffect(key1 = Unit) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
+        }
     }
     if (location != null) {
         LaunchedEffect(key1 = Unit) {
             mapViewModel.getPlaces(location!!.longitude, location!!.latitude)
+        }
+    }
+    var showButton by remember {
+        mutableStateOf(false)
+    }
+    if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+        LaunchedEffect(key1 = Unit) {
+            delay(1000)
+            showButton = true
         }
     }
     Box(
@@ -120,6 +139,27 @@ fun MapScreen(
                         Text(place.properties.name, color = Color.Red)
                     }
                 }
+            }
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .systemBarsPadding(),
+            visible = showButton
+        ) {
+            Button(onClick = {
+                scope.launch {
+                    mapViewModel.clearPlaces()
+                    delay(100)
+                    mapViewModel.getPlaces(
+                        cameraPositionState.position.target.longitude,
+                        cameraPositionState.position.target.latitude
+                    )
+                    showButton = false
+                }
+            }) {
+                Text(text = "Искать здесь")
             }
         }
 

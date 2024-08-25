@@ -66,6 +66,12 @@ class MapViewModel(
         }
     }
 
+    fun clearPlaces() {
+        viewModelScope.launch {
+            _places.value = emptyList()
+        }
+    }
+
     fun getInfo(
         xid: String
     ) {
