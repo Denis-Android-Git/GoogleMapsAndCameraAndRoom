@@ -11,6 +11,7 @@ import com.example.myapplication.domain.GetPlacesUseCase
 import com.example.myapplication.domain.GetsSpeedUseCase
 import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -61,6 +62,7 @@ class MapViewModel(
             try {
                 _places.value = getPlacesUseCase.execute(lon, lat)
             } catch (e: Exception) {
+                coroutineContext.ensureActive()
                 _error.value = "No connection"
             }
         }
@@ -79,6 +81,7 @@ class MapViewModel(
             try {
                 _detailInfo.value = getInfoUseCase.execute(xid)
             } catch (e: Exception) {
+                coroutineContext.ensureActive()
                 _error.value = "No connection"
             }
         }

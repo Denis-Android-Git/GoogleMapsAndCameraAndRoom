@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -106,7 +105,7 @@ fun MapScreen(
     }
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = Unit) {
-            delay(1000)
+            delay(500)
             showButton = true
         }
     }
@@ -120,7 +119,7 @@ fun MapScreen(
             uiSettings = uiSettings,
             cameraPositionState = cameraPositionState
         ) {
-            for (place in places) {
+            places.map { place ->
 
                 val position =
                     LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
@@ -135,9 +134,7 @@ fun MapScreen(
                         showText = false
                     }
                 ) {
-                    Column {
-                        Text(place.properties.name, color = Color.Red)
-                    }
+                    Text(place.properties.name, color = Color.Red)
                 }
             }
         }
