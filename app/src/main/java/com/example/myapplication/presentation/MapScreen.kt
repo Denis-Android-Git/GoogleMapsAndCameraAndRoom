@@ -2,6 +2,7 @@ package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -38,9 +39,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.example.myapplication.data.Destinations
 import com.example.myapplication.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -55,12 +58,15 @@ import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
-    mapViewModel: MapViewModel = koinViewModel()
+    mapViewModel: MapViewModel = koinViewModel(),
+    navController: NavController
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
     val places by mapViewModel.places.collectAsState()
@@ -206,21 +212,40 @@ fun MapScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     AnimatedVisibility(isExpanded) {
+                        Log.d("Image", info!!.image)
                         SubcomposeAsyncImage(
                             modifier = Modifier
                                 .padding(start = 16.dp, top = 16.dp)
                                 .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    val image = URLEncoder.encode(
+                                        info?.preview?.source,
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                    navController.navigate(
+                                        Destinations.DetailScreen.withArgs(
+                                            image, ""
+                                        )
+                                    )
+                                }
                                 .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
                             model = info?.preview?.source,
                             contentDescription = null
                         ) {
-                            val state = painter.state
-                            if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                                CircularProgressIndicator(
-                                    color = Color.White
-                                )
-                            } else {
-                                SubcomposeAsyncImageContent()
+                            when (val state = painter.state) {
+                                is AsyncImagePainter.State.Loading -> {
+                                    CircularProgressIndicator(
+                                        color = Color.White
+                                    )
+                                }
+
+                                is AsyncImagePainter.State.Error -> {
+                                    state.result.throwable.message?.let { Text(text = it) }
+                                }
+
+                                else -> {
+                                    SubcomposeAsyncImageContent()
+                                }
                             }
                         }
                     }

@@ -16,6 +16,9 @@ class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
     private var _routeLink = MutableStateFlow<String?>(null)
     val routeLink = _routeLink.asStateFlow()
 
+    private var _photo = MutableStateFlow<Photo?>(null)
+    val photo = _photo.asStateFlow()
+
     suspend fun setRoute(route: String?) {
         _routeLink.value = route
         delay(50)
@@ -51,6 +54,12 @@ class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
     fun deleteOnePhoto(photo: Photo) {
         viewModelScope.launch {
             appDataBase.photoDao().deleteOnePhoto(photo)
+        }
+    }
+
+    fun getPhotoById(id: String?) {
+        viewModelScope.launch {
+            _photo.value = id?.let { appDataBase.photoDao().getPhotoById(it) }
         }
     }
 }

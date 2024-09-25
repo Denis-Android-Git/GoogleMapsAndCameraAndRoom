@@ -31,7 +31,7 @@ fun Navigation(
     val navController = rememberNavController()
     val routeLink = viewModel.routeLink.collectAsState()
 
-    LaunchedEffect (routeLink.value != null) {
+    LaunchedEffect(routeLink.value != null) {
         routeLink.value?.let { navController.navigate(it) }
     }
 
@@ -67,21 +67,24 @@ fun Navigation(
                 navArgument("name") {
                     type = NavType.StringType
                     defaultValue = "No photo"
-                    nullable = true
+                    nullable = false
                 },
                 navArgument("date") {
                     type = NavType.StringType
                     defaultValue = "No date"
-                    nullable = true
+                    nullable = false
                 }
             )
         ) { entry ->
-            DetailScreen(
-                name = entry.arguments?.getString("name"),
-                date = entry.arguments?.getString("date"),
-                navController = navController,
-                viewModel = viewModel
-            )
+            val image = entry.arguments?.getString("name")
+            image?.let {
+                DetailScreen(
+                    image = it,
+                    date = entry.arguments?.getString("date"),
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
         }
         composable(
             route = Destinations.MapScreen.routes,
@@ -89,7 +92,9 @@ fun Navigation(
                 uriPattern = "$URI/${Destinations.MapScreen.routes}"
             })
         ) {
-            MapScreen()
+            MapScreen(
+                navController = navController
+            )
         }
     }
 }

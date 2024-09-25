@@ -21,4 +21,7 @@ interface PhotoDao {
 
     @Query("select * from Photo")
     fun getAll(): Flow<List<Photo>>
+
+    @Query("select * from Photo where uri = :id")
+    suspend fun getPhotoById(id: String): Photo
 }

@@ -1,10 +1,12 @@
 package com.example.myapplication.presentation
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,47 +18,81 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.viewmodel.MyViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun DetailScreen(
-    name: String?,
+    image: String,
     date: String?,
     navController: NavController,
     viewModel: MyViewModel
 ) {
-    val photoList by viewModel.allPhotos.collectAsState()
-    val painter = rememberAsyncImagePainter(model = name)
+    viewModel.getPhotoById(image)
+    val showDelete = !image.contains("https")
+    val photo by viewModel.photo.collectAsStateWithLifecycle()
+
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var showImage by remember { mutableStateOf(true) }
+
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        (if (!showImage) null else painter)?.let {
-            Image(
-                painter = it, contentDescription = null, modifier = Modifier.fillMaxSize()
-            )
+        (if (!showImage) null else image)?.let {
+            SubcomposeAsyncImage(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(2.dp, Color.Gray, RoundedCornerShape(16.dp))
+                    .align(Alignment.Center)
+                    .fillMaxWidth(),
+                model = it,
+                contentDescription = null
+            ) {
+                when (val state = painter.state) {
+                    is AsyncImagePainter.State.Loading -> {
+                        CircularProgressIndicator(
+                            color = Color.White
+                        )
+                    }
+
+                    is AsyncImagePainter.State.Error -> {
+                        state.result.throwable.message?.let { error ->
+                            Text(text = error)
+                        }
+                    }
+
+                    else -> {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
             Text(
                 text = date ?: "",
                 fontSize = 20.sp,
@@ -71,21 +107,26 @@ fun DetailScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(
+        AnimatedVisibility(
+            showDelete,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 16.dp)
                 .systemBarsPadding()
-                .size(48.dp)
-                .background(Color.White, shape = CircleShape)
-                .clickable { showDeleteConfirmation = true }
         ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete all photos",
-                tint = Color.Black,
-                modifier = Modifier.padding(12.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(Color.White, shape = CircleShape)
+                    .clickable { showDeleteConfirmation = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete all photos",
+                    tint = Color.Black,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
         }
         if (showDeleteConfirmation) {
             AlertDialog(
@@ -95,12 +136,16 @@ fun DetailScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            photoList.lastOrNull()?.let {
-                                viewModel.deleteOnePhoto(it)
+                            scope.launch {
+                                val currentPhoto = photo
+                                currentPhoto?.let {
+                                    viewModel.deleteOnePhoto(photo = currentPhoto)
+                                }
+
+                                showDeleteConfirmation = false
+                                showImage = false
+                                navController.navigate(Destinations.MainScreen.routes)
                             }
-                            showDeleteConfirmation = false
-                            showImage = false
-                            navController.navigate(Destinations.MainScreen.routes)
                         },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
