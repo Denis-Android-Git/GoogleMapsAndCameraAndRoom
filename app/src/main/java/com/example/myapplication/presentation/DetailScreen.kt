@@ -22,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +52,9 @@ fun DetailScreen(
     navController: NavController,
     viewModel: MyViewModel
 ) {
-    viewModel.getPhotoById(image)
+    LaunchedEffect(Unit) {
+        viewModel.getPhotoById(image)
+    }
     val showDelete = !image.contains("https")
     val photo by viewModel.photo.collectAsStateWithLifecycle()
 

@@ -2,7 +2,6 @@ package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -96,14 +95,14 @@ fun MapScreen(
 
     val cameraPositionState = rememberCameraPositionState()
 
-    if (location != null) {
+    location?.let {
         LaunchedEffect(key1 = Unit) {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(location!!, 15f)
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
         }
     }
-    if (location != null) {
+    location?.let {
         LaunchedEffect(key1 = Unit) {
-            mapViewModel.getPlaces(location!!.longitude, location!!.latitude)
+            mapViewModel.getPlaces(it.longitude, it.latitude)
         }
     }
     var showButton by remember {
@@ -179,88 +178,88 @@ fun MapScreen(
                 modifier = Modifier.align(Alignment.TopStart)
             )
         }
-        if (info != null && showText) {
-
-            val wikipediaText = info?.wikipedia_extracts?.text ?: "Нет информации"
-            val interactionSource = remember { MutableInteractionSource() }
-            var isExpanded by remember {
-                mutableStateOf(false)
-            }
-            val surfaceColor by animateColorAsState(
-                if (isExpanded)
-                    MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                label = ""
-            )
-            Surface(
-                modifier = Modifier
-                    .animateContentSize()
-                    .padding(1.dp)
-                    .align(Alignment.Center)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = ripple(
-                            bounded = true,
-                            //radius = 250.dp,
-                            color = Color.DarkGray
-                        )
-                    ) { isExpanded = !isExpanded },
-                shape = MaterialTheme.shapes.medium,
-                shadowElevation = 5.dp,
-                color = surfaceColor,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
+        if (showText) {
+            info?.let {
+                val interactionSource = remember { MutableInteractionSource() }
+                var isExpanded by remember {
+                    mutableStateOf(false)
+                }
+                val surfaceColor by animateColorAsState(
+                    if (isExpanded)
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                    label = ""
+                )
+                Surface(
+                    modifier = Modifier
+                        .animateContentSize()
+                        .padding(1.dp)
+                        .align(Alignment.Center)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = ripple(
+                                bounded = true,
+                                //radius = 250.dp,
+                                color = Color.DarkGray
+                            )
+                        ) { isExpanded = !isExpanded },
+                    shape = MaterialTheme.shapes.medium,
+                    shadowElevation = 5.dp,
+                    color = surfaceColor,
                 ) {
-                    AnimatedVisibility(isExpanded) {
-                        Log.d("Image", info!!.image)
-                        SubcomposeAsyncImage(
-                            modifier = Modifier
-                                .padding(start = 16.dp, top = 16.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .clickable {
-                                    val image = URLEncoder.encode(
-                                        info?.preview?.source,
-                                        StandardCharsets.UTF_8.toString()
-                                    )
-                                    navController.navigate(
-                                        Destinations.DetailScreen.withArgs(
-                                            image, ""
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        AnimatedVisibility(isExpanded && it.wikipedia_extracts != null) {
+                            //Log.d("Image", info!!.image)
+                            SubcomposeAsyncImage(
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 16.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        val image = URLEncoder.encode(
+                                            it.preview?.source,
+                                            StandardCharsets.UTF_8.toString()
                                         )
-                                    )
-                                }
-                                .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
-                            model = info?.preview?.source,
-                            contentDescription = null
-                        ) {
-                            when (val state = painter.state) {
-                                is AsyncImagePainter.State.Loading -> {
-                                    CircularProgressIndicator(
-                                        color = Color.White
-                                    )
-                                }
+                                        navController.navigate(
+                                            Destinations.DetailScreen.withArgs(
+                                                image, ""
+                                            )
+                                        )
+                                    }
+                                    .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
+                                model = it.preview?.source,
+                                contentDescription = null
+                            ) {
+                                when (val state = painter.state) {
+                                    is AsyncImagePainter.State.Loading -> {
+                                        CircularProgressIndicator(
+                                            color = Color.White
+                                        )
+                                    }
 
-                                is AsyncImagePainter.State.Error -> {
-                                    state.result.throwable.message?.let { Text(text = it) }
-                                }
+                                    is AsyncImagePainter.State.Error -> {
+                                        state.result.throwable.message?.let { error -> Text(text = error) }
+                                    }
 
-                                else -> {
-                                    SubcomposeAsyncImageContent()
+                                    else -> {
+                                        SubcomposeAsyncImageContent()
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(16.dp),
-                        maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                        text = wikipediaText,
-                        fontSize = 15.sp,
-                        color = if (isExpanded) Color.White else Color.Black,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(16.dp),
+                            maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                            text = it.wikipedia_extracts?.text ?: "Нет информации",
+                            fontSize = 15.sp,
+                            color = if (isExpanded) Color.White else Color.Black,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
         }
