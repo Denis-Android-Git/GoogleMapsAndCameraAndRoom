@@ -5,6 +5,7 @@ sealed class Destinations(val routes: String) {
     data object CameraScreen : Destinations("camera_screen")
     data object DetailScreen : Destinations("detail_screen")
     data object MapScreen : Destinations("map_screen")
+    data object XmlMap : Destinations("xml_map")
 
     fun withArgs(vararg args: String?): String {
         return buildString {

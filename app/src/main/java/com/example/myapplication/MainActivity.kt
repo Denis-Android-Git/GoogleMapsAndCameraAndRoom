@@ -15,6 +15,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.data.Camera
 import com.example.myapplication.entity.Photo
 import com.example.myapplication.presentation.Navigation
@@ -29,7 +30,7 @@ import org.koin.core.parameter.parametersOf
 
 const val FILE_NAME = "dd-M-yyyy"
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val viewModel: MyViewModel by viewModel()
 

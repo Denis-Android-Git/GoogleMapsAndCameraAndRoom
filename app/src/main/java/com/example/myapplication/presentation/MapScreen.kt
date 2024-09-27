@@ -56,7 +56,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -64,7 +63,7 @@ import java.nio.charset.StandardCharsets
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
-    mapViewModel: MapViewModel = koinViewModel(),
+    mapViewModel: MapViewModel,
     navController: NavController
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
@@ -96,12 +95,12 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState()
 
     location?.let {
-        LaunchedEffect(key1 = Unit) {
+        LaunchedEffect(key1 = location) {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
         }
     }
     location?.let {
-        LaunchedEffect(key1 = Unit) {
+        LaunchedEffect(key1 = location) {
             mapViewModel.getPlaces(it.longitude, it.latitude)
         }
     }

@@ -17,7 +17,9 @@ import com.example.myapplication.data.Camera
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.URI
 import com.example.myapplication.entity.Photo
+import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -26,7 +28,8 @@ fun Navigation(
     viewModel: MyViewModel,
     camera: Camera,
     deleteList: SnapshotStateList<Photo>,
-    previewView: PreviewView
+    previewView: PreviewView,
+    mapViewModel: MapViewModel = koinViewModel(),
 ) {
     val navController = rememberNavController()
     val routeLink = viewModel.routeLink.collectAsState()
@@ -93,8 +96,14 @@ fun Navigation(
             })
         ) {
             MapScreen(
+                mapViewModel = mapViewModel,
                 navController = navController
             )
+        }
+        composable(
+            route = Destinations.XmlMap.routes
+        ) {
+            XmlMap()
         }
     }
 }

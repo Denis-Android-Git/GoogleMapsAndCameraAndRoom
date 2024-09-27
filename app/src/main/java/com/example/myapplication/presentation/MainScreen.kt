@@ -175,7 +175,7 @@ fun MainScreen(
                     pressedElevation = 4.dp
                 ),
                 onClick = {
-                    navController.navigate(Destinations.MapScreen.routes)
+                    navController.navigate(Destinations.XmlMap.routes)
                     MyFirebaseMessage().createNotification(context)
                 },
                 modifier = Modifier

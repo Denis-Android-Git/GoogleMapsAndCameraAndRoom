@@ -5,6 +5,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.10"
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -111,4 +112,13 @@ dependencies {
     //Koin
     implementation 'io.insert-koin:koin-androidx-compose:4.0.0'
 
+    //Fragment
+    def fragment_version = "1.8.3"
+    // Kotlin
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+    // Compose
+    implementation "androidx.fragment:fragment-compose:$fragment_version"
+    // Testing Fragments in Isolation
+    debugImplementation "androidx.fragment:fragment-testing-manifest:$fragment_version"
+    androidTestImplementation "androidx.fragment:fragment-testing:$fragment_version"
 }
