@@ -12,14 +12,20 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,12 +44,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.data.Destinations
+import com.example.myapplication.entity.db.Place
 import com.example.myapplication.viewmodel.MapViewModel
+import com.example.myapplication.viewmodel.MyViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -64,7 +73,8 @@ import java.nio.charset.StandardCharsets
 @Composable
 fun MapScreen(
     mapViewModel: MapViewModel,
-    navController: NavController
+    navController: NavController,
+    myViewModel: MyViewModel
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
     val places by mapViewModel.places.collectAsState()
@@ -72,6 +82,7 @@ fun MapScreen(
     val error by mapViewModel.error.collectAsState()
     val location by mapViewModel.location.collectAsState()
     val scope = rememberCoroutineScope()
+    val placeList by myViewModel.allPlaces.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -116,6 +127,7 @@ fun MapScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = 100.dp)
     ) {
         GoogleMap(
             contentPadding = PaddingValues(top = 20.dp),
@@ -179,6 +191,9 @@ fun MapScreen(
         }
         if (showText) {
             info?.let {
+                val placeInDb = placeList.find { place ->
+                    place.id == it.xid
+                }
                 val interactionSource = remember { MutableInteractionSource() }
                 var isExpanded by remember {
                     mutableStateOf(false)
@@ -210,39 +225,70 @@ fun MapScreen(
                     ) {
                         AnimatedVisibility(isExpanded && it.wikipedia_extracts != null) {
                             //Log.d("Image", info!!.image)
-                            SubcomposeAsyncImage(
-                                modifier = Modifier
-                                    .padding(start = 16.dp, top = 16.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .clickable {
-                                        val image = URLEncoder.encode(
-                                            it.preview?.source,
-                                            StandardCharsets.UTF_8.toString()
-                                        )
-                                        navController.navigate(
-                                            Destinations.DetailScreen.withArgs(
-                                                image, ""
+
+                            Row {
+                                SubcomposeAsyncImage(
+                                    modifier = Modifier
+                                        .padding(start = 16.dp, top = 16.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            val image = URLEncoder.encode(
+                                                it.preview?.source,
+                                                StandardCharsets.UTF_8.toString()
                                             )
-                                        )
-                                    }
-                                    .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
-                                model = it.preview?.source,
-                                contentDescription = null
-                            ) {
-                                when (val state = painter.state) {
-                                    is AsyncImagePainter.State.Loading -> {
-                                        CircularProgressIndicator(
-                                            color = Color.White
-                                        )
-                                    }
+                                            navController.navigate(
+                                                Destinations.DetailScreen.withArgs(
+                                                    image, ""
+                                                )
+                                            )
+                                        }
+                                        .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
+                                    model = it.preview?.source,
+                                    contentDescription = null
+                                ) {
+                                    when (val state = painter.state) {
+                                        is AsyncImagePainter.State.Loading -> {
+                                            CircularProgressIndicator(
+                                                color = Color.White
+                                            )
+                                        }
 
-                                    is AsyncImagePainter.State.Error -> {
-                                        state.result.throwable.message?.let { error -> Text(text = error) }
-                                    }
+                                        is AsyncImagePainter.State.Error -> {
+                                            state.result.throwable.message?.let { error -> Text(text = error) }
+                                        }
 
-                                    else -> {
-                                        SubcomposeAsyncImageContent()
+                                        else -> {
+                                            SubcomposeAsyncImageContent()
+                                        }
                                     }
+                                }
+                                Spacer(modifier = Modifier.weight(1f))
+                                IconButton(
+                                    modifier = Modifier
+                                        .padding(end = 16.dp, top = 16.dp)
+                                        .align(Alignment.CenterVertically),
+                                    onClick = {
+                                        scope.launch {
+                                            if (placeInDb == null) {
+                                                val place = Place(
+                                                    id = it.xid,
+                                                    title = it.name,
+                                                    picture = it.preview?.source,
+                                                    latitude = it.point.lat,
+                                                    longitude = it.point.lon
+                                                )
+                                                myViewModel.addPlace(place)
+                                            } else {
+                                                myViewModel.deletePlace(placeInDb)
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Favorite,
+                                        tint = if (placeInDb == null) Color.White else Color.Red,
+                                        contentDescription = null
+                                    )
                                 }
                             }
                         }

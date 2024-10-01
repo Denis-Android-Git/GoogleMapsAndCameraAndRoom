@@ -18,50 +18,46 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.myapplication.R
-import com.example.myapplication.data.Camera
-import com.example.myapplication.data.Destinations
-import com.example.myapplication.data.MyFirebaseMessage
-import com.example.myapplication.entity.Photo
+import com.example.myapplication.entity.db.Place
 import com.example.myapplication.viewmodel.MyViewModel
 
 
 @Composable
-fun MainScreen(
+fun LikedScreen(
     navController: NavController,
     viewModel: MyViewModel,
-    deleteList: SnapshotStateList<Photo>,
-    camera: Camera
+    //deleteList: SnapshotStateList<Photo>,
+    //camera: Camera
 ) {
+
+    val deleteList = remember { mutableStateListOf<Place>() }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val placeList by viewModel.allPlaces.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
+            .padding(bottom = 100.dp)
 
     ) {
         Box(
@@ -70,9 +66,7 @@ fun MainScreen(
                 .fillMaxSize()
         ) {
 
-            val photoList by viewModel.allPhotos.collectAsState()
-
-            if (photoList.isEmpty()) {
+            if (placeList.isEmpty()) {
                 TextContent()
             } else {
                 LazyVerticalGrid(
@@ -81,9 +75,9 @@ fun MainScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = WindowInsets.systemBars.asPaddingValues()//PaddingValues(horizontal = 40.dp)
                 ) {
-                    items(photoList) { photo ->
+                    items(placeList) { place ->
                         PhotoItem(
-                            photo = photo,
+                            place = place,
                             navController = navController,
                             deleteList = deleteList
                         )
@@ -99,7 +93,7 @@ fun MainScreen(
                         Button(
                             onClick = {
                                 deleteList.forEach {
-                                    viewModel.deleteOnePhoto(it)
+                                    viewModel.deletePlace(it)
                                 }
                                 showDeleteConfirmation = false
                                 deleteList.clear()
@@ -167,60 +161,36 @@ fun MainScreen(
                         .align(Alignment.Center)
                         .clickable { showDeleteConfirmation = true })
             }
-        } else {
-            FloatingActionButton(
-                containerColor = Color.Black,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 8.dp,
-                    pressedElevation = 4.dp
-                ),
-                onClick = {
-                    navController.navigate(Destinations.XmlMap.routes)
-                    MyFirebaseMessage().createNotification(context)
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(6.dp)
-                    .systemBarsPadding(),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "maps",
-                    tint = Color.White
-                )
-            }
         }
-        FloatingActionButton(
-            containerColor = Color.Black,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 8.dp,
-                pressedElevation = 4.dp
-            ),
-            onClick = {
-                navController.navigate(Destinations.CameraScreen.routes)
-                camera.startCamera()
-                deleteList.clear()
-//                    FirebaseCrashlytics.getInstance().log("Additional info")
-//                    try {
-//                        throw Exception("My test")
-//                    } catch (e: Exception) {
-//                        FirebaseCrashlytics.getInstance().recordException(e)
-//                    }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(6.dp)
-                .systemBarsPadding()
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_photo_camera_24),
-                contentDescription = "Camera",
-                tint = Color.White
-            )
+//        FloatingActionButton(
+//            containerColor = Color.Black,
+//            elevation = FloatingActionButtonDefaults.elevation(
+//                defaultElevation = 8.dp,
+//                pressedElevation = 4.dp
+//            ),
+//            onClick = {
+//                navController.navigate(Destinations.CameraScreen.routes)
+//                camera.startCamera()
+//                deleteList.clear()
+////                    FirebaseCrashlytics.getInstance().log("Additional info")
+////                    try {
+////                        throw Exception("My test")
+////                    } catch (e: Exception) {
+////                        FirebaseCrashlytics.getInstance().recordException(e)
+////                    }
+//            },
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(6.dp)
+//                .systemBarsPadding()
+//        ) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.baseline_photo_camera_24),
+//                contentDescription = "Camera",
+//                tint = Color.White
+//            )
 //                Text(
 //                    text = "Add a picture", color = Color.White
 //                )
-        }
     }
 }

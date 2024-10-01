@@ -6,19 +6,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.data.Camera
-import com.example.myapplication.entity.Photo
-import com.example.myapplication.presentation.Navigation
+import com.example.myapplication.presentation.BottomNaviScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MyViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -58,14 +54,8 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             MyApplicationTheme {
-                val deleteList = remember {
-                    mutableStateListOf<Photo>()
-                }
-                Navigation(
+                BottomNaviScreen(
                     viewModel = viewModel,
-                    camera = camera,
-                    deleteList = deleteList,
-                    previewView = previewView
                 )
             }
         }

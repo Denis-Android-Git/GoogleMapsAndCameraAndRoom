@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 fun TextContent() {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Try to add a picture to your gallery",
+            text = "Добавьте достопримечательности",
             modifier = Modifier.align(Alignment.Center).padding(16.dp),
             fontSize = 25.sp,
             fontStyle = FontStyle.Italic,

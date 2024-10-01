@@ -2,21 +2,17 @@ package com.example.myapplication.presentation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.example.myapplication.data.Camera
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.URI
-import com.example.myapplication.entity.Photo
 import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -25,13 +21,14 @@ import org.koin.androidx.compose.koinViewModel
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Navigation(
+    //modifier: Modifier,
     viewModel: MyViewModel,
-    camera: Camera,
-    deleteList: SnapshotStateList<Photo>,
-    previewView: PreviewView,
+    //camera: Camera,
+    //deleteList: SnapshotStateList<Photo>,
+    //previewView: PreviewView,
+    navController: NavHostController,
     mapViewModel: MapViewModel = koinViewModel(),
 ) {
-    val navController = rememberNavController()
     val routeLink = viewModel.routeLink.collectAsState()
 
     LaunchedEffect(routeLink.value != null) {
@@ -39,31 +36,9 @@ fun Navigation(
     }
 
     NavHost(
-        navController = navController, startDestination = Destinations.MainScreen.routes
+        //modifier = modifier,
+        navController = navController, startDestination = Destinations.MapScreen.routes
     ) {
-        composable(
-            route = Destinations.MainScreen.routes,
-            deepLinks = listOf(navDeepLink {
-                uriPattern = "$URI/${Destinations.MainScreen.routes}"
-            })
-        ) {
-            MainScreen(
-                navController,
-                camera = camera,
-                viewModel = viewModel,
-                deleteList = deleteList
-            )
-        }
-        composable(
-            route = Destinations.CameraScreen.routes,
-        ) {
-            CameraScreen(
-                navController,
-                camera = camera,
-                viewModel = viewModel,
-                previewView = previewView
-            )
-        }
         composable(
             route = Destinations.DetailScreen.routes + "/{name}/{date}",
             arguments = listOf(
@@ -97,13 +72,27 @@ fun Navigation(
         ) {
             MapScreen(
                 mapViewModel = mapViewModel,
-                navController = navController
+                navController = navController,
+                myViewModel = viewModel
             )
         }
         composable(
             route = Destinations.XmlMap.routes
         ) {
             XmlMap()
+        }
+        composable(
+            route = Destinations.LikedScreen.routes
+        ) {
+            LikedScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+        composable(
+            route = Destinations.SearchScreen.routes
+        ) {
+            SearchScreen()
         }
     }
 }
