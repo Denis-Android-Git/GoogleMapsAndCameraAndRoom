@@ -21,7 +21,9 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -144,7 +146,9 @@ fun MapScreen(
                     state = rememberMarkerState(position = position),
                     onInfoWindowClick = {
                         mapViewModel.getInfo(place.properties.xid)
-                        showText = true
+                        if (place.properties.name.isNotEmpty()) {
+                            showText = true
+                        }
                     },
                     onInfoWindowClose = {
                         showText = false
@@ -292,18 +296,46 @@ fun MapScreen(
                                 }
                             }
                         }
-
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(16.dp),
-                            maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                            text = it.wikipedia_extracts?.text ?: "Нет информации",
-                            fontSize = 15.sp,
-                            color = if (isExpanded) Color.White else Color.Black,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Row {
+                            Text(
+                                modifier = Modifier
+                                    .wrapContentHeight()
+                                    .padding(16.dp),
+                                maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                                text = it.wikipedia_extracts?.text ?: "Нет информации",
+                                fontSize = 15.sp,
+                                color = if (isExpanded) Color.White else Color.Black,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .align(Alignment.CenterVertically),
+                                onClick = {
+                                    scope.launch {
+                                        if (placeInDb == null) {
+                                            val place = Place(
+                                                id = it.xid,
+                                                title = it.name,
+                                                picture = it.preview?.source,
+                                                latitude = it.point.lat,
+                                                longitude = it.point.lon
+                                            )
+                                            myViewModel.addPlace(place)
+                                        } else {
+                                            myViewModel.deletePlace(placeInDb)
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (placeInDb == null) Icons.Outlined.Favorite else Icons.Filled.Favorite,
+                                    tint = if (placeInDb == null) Color.LightGray else Color.Red,
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -65,6 +65,14 @@ class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
         }
     }
 
+    fun deleteAllPlaces() {
+        viewModelScope.launch {
+            allPlaces.value.let {
+                appDataBase.photoDao().deleteAllPlaces(it)
+            }
+        }
+    }
+
     fun deletePlace(place: Place) {
         viewModelScope.launch {
             appDataBase.photoDao().deletePlace(place)

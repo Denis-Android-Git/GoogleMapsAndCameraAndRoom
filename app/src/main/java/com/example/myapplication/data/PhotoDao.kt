@@ -17,6 +17,9 @@ interface PhotoDao {
     @Delete
     suspend fun deletePlace(place: Place)
 
+    @Delete
+    suspend fun deleteAllPlaces(places: List<Place>)
+
     @Query("select * from Place where id = :id")
     suspend fun getPlaceById(id: String): Place
 
