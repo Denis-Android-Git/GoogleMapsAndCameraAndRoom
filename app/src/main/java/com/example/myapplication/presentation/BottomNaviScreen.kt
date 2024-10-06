@@ -1,8 +1,7 @@
 package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -27,9 +26,9 @@ import com.example.myapplication.entity.BottomItem
 import com.example.myapplication.viewmodel.MyViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BottomNaviScreen(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     viewModel: MyViewModel,
 ) {
     val navController = rememberNavController()
@@ -52,7 +51,6 @@ fun BottomNaviScreen(
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.height(100.dp),
-                containerColor = Color.Black,
             ) {
                 bottomItems.forEachIndexed { _, bottomItem ->
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -61,8 +59,12 @@ fun BottomNaviScreen(
                         it.route == bottomItem.destination
                     } == true
                     NavigationBarItem(
-                        colors = NavigationBarItemDefaults.colors(
+                        colors = if (darkTheme) NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.White,
+                            unselectedIconColor = Color.Gray,
+                            indicatorColor = Color.Transparent
+                        ) else NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Black,
                             unselectedIconColor = Color.Gray,
                             indicatorColor = Color.Transparent
                         ),

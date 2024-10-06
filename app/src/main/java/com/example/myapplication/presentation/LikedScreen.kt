@@ -1,5 +1,7 @@
 package com.example.myapplication.presentation
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,8 +76,20 @@ fun LikedScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = WindowInsets.systemBars.asPaddingValues()//PaddingValues(horizontal = 40.dp)
                 ) {
-                    items(placeList) { place ->
+                    items(placeList,
+                        key = {
+                            it.id
+                        }) { place ->
                         PhotoItem(
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = null,
+                                fadeOutSpec = null,
+                                placementSpec = //tween(durationMillis = 650)
+                                spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
                             place = place,
                             navController = navController,
                             deleteList = deleteList

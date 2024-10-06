@@ -34,11 +34,13 @@ import com.example.myapplication.entity.db.Place
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PhotoItem(
+    modifier: Modifier,
     place: Place,
     navController: NavController,
     deleteList: MutableList<Place>
 ) {
     Box(
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(
@@ -113,6 +115,7 @@ fun PhotoItemPreview() {
         picture = null
     )
     PhotoItem(
+        modifier = Modifier,
         deleteList = mutableListOf(),
         navController = navController,
         place = place

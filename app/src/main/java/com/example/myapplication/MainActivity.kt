@@ -9,16 +9,17 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.data.Camera
 import com.example.myapplication.presentation.BottomNaviScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MyViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -36,29 +37,38 @@ class MainActivity : FragmentActivity() {
 
     private val camera: Camera by inject { parametersOf(this, previewView) }
 
+    private var permissionsGranted = MutableStateFlow(false)
+
     private val launcher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
             if (map.values.all { it }) {
                 camera.startCamera()
+                permissionsGranted.value = true
             } else {
                 Toast.makeText(this, "Permissions are not granted", Toast.LENGTH_LONG).show()
             }
         }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         previewView = PreviewView(this)
         enableEdgeToEdge()
         checkPermissions()
 
-        setContent {
-            MyApplicationTheme {
-                BottomNaviScreen(
-                    viewModel = viewModel,
-                )
+        lifecycleScope.launch {
+            permissionsGranted.collect {
+                if (it) {
+                    setContent {
+                        MyApplicationTheme {
+                            BottomNaviScreen(
+                                viewModel = viewModel,
+                            )
+                        }
+                    }
+                }
             }
         }
+
 
 //        FirebaseMessaging.getInstance().token.addOnCompleteListener {
 //            Log.d("Registration token", it.result)
@@ -76,21 +86,19 @@ class MainActivity : FragmentActivity() {
     companion object {
         const val NOTIFICATION_ID = 1000
 
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         private val REQUEST_PERMISSIONS: Array<String> = buildList {
             add(Manifest.permission.CAMERA)
             add(Manifest.permission.ACCESS_COARSE_LOCATION)
             add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.POST_NOTIFICATIONS)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }.toTypedArray()
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkPermissions() {
         val isAllGranted = REQUEST_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
-        if (!isAllGranted) launcher.launch(REQUEST_PERMISSIONS)
+        if (!isAllGranted) launcher.launch(REQUEST_PERMISSIONS) else permissionsGranted.value = true
     }
 }

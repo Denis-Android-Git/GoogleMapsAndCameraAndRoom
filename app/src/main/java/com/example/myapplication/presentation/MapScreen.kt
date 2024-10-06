@@ -1,8 +1,6 @@
 package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -23,8 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,7 +68,6 @@ import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-@RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
@@ -165,17 +162,20 @@ fun MapScreen(
                 .systemBarsPadding(),
             visible = showButton
         ) {
-            Button(onClick = {
-                scope.launch {
-                    mapViewModel.clearPlaces()
-                    delay(100)
-                    mapViewModel.getPlaces(
-                        cameraPositionState.position.target.longitude,
-                        cameraPositionState.position.target.latitude
-                    )
-                    showButton = false
-                }
-            }) {
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                ),
+                onClick = {
+                    scope.launch {
+                        mapViewModel.clearPlaces()
+                        delay(100)
+                        mapViewModel.getPlaces(
+                            cameraPositionState.position.target.longitude,
+                            cameraPositionState.position.target.latitude
+                        )
+                        showButton = false
+                    }
+                }) {
                 Text(text = "Искать здесь")
             }
         }

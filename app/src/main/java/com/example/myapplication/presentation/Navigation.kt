@@ -1,7 +1,5 @@
 package com.example.myapplication.presentation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,8 +15,6 @@ import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
 import org.koin.androidx.compose.koinViewModel
 
-
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Navigation(
     //modifier: Modifier,

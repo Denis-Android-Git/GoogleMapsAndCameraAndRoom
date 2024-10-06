@@ -1,7 +1,5 @@
 package com.example.myapplication.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.DetailInfoDto
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.S)
 class MapViewModel(
     private val getPlacesUseCase: GetPlacesUseCase,
     private val getInfoUseCase: GetInfoUseCase,
