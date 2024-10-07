@@ -35,7 +35,7 @@ fun PlacesNavigation(
             )
         ) {
             val placeId = it.arguments?.getString("placeId")
-            if (placeId != null) {
+            placeId?.let {
                 MapScreen2(
                     placeId = placeId
                 )
