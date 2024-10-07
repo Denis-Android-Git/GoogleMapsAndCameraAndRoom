@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
@@ -79,7 +82,7 @@ fun PhotoItem(
         Card(
             modifier = Modifier
                 .padding(horizontal = 5.dp)
-                .fillMaxWidth(),
+                .width(130.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 5.dp
             ),
@@ -88,11 +91,16 @@ fun PhotoItem(
             )
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(3.dp)
+                    .fillMaxWidth(),
                 text = place.title,
                 textAlign = TextAlign.Center,
                 maxLines = 2,
-                color = Color.Red
+                color = Color.Red,
+                style = TextStyle(
+                    lineHeight = 13.sp
+                )
             )
         }
         if (deleteList.contains(place)) {

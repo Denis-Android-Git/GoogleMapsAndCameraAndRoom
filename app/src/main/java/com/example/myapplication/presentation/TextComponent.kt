@@ -31,7 +31,8 @@ fun TextComponent(
                 .padding(horizontal = 8.dp),
             text = text,
             fontSize = 15.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
     }
 }

@@ -304,7 +304,7 @@ fun MapScreen(
                                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                                 text = it.wikipedia_extracts?.text ?: "Нет информации",
                                 fontSize = 15.sp,
-                                color = if (isExpanded) Color.White else Color.Black,
+                                color = if (isExpanded) Color.White else Color.Unspecified,
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Spacer(modifier = Modifier.weight(1f))
