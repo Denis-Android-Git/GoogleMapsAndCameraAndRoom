@@ -31,6 +31,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.R
+import com.example.myapplication.data.Destinations
 import com.example.myapplication.entity.db.Place
 
 
@@ -51,10 +52,8 @@ fun PhotoItem(
                 .size(130.dp)
                 .combinedClickable(
                     onClick = {
-//                    val args = URLEncoder.encode(place.uri, StandardCharsets.UTF_8.toString())
-//                    val date = place.date
-//                    navController.navigate(Destinations.DetailScreen.withArgs(args, date))
-//                    deleteList.clear()
+                        navController.navigate(Destinations.MapScreen2.withArgs(place.id))
+                        deleteList.clear()
                     },
                     onLongClick = {
                         if (deleteList.contains(place)) {

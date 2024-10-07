@@ -37,7 +37,7 @@ class MainActivity : FragmentActivity() {
 
     private val camera: Camera by inject { parametersOf(this, previewView) }
 
-    private var permissionsGranted = MutableStateFlow(false)
+    private val permissionsGranted = MutableStateFlow(false)
 
     private val launcher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->

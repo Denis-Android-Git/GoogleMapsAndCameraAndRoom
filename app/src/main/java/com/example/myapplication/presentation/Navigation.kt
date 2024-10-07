@@ -17,11 +17,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun Navigation(
-    //modifier: Modifier,
     viewModel: MyViewModel,
-    //camera: Camera,
-    //deleteList: SnapshotStateList<Photo>,
-    //previewView: PreviewView,
     navController: NavHostController,
     mapViewModel: MapViewModel = koinViewModel(),
 ) {
@@ -80,8 +76,7 @@ fun Navigation(
         composable(
             route = Destinations.LikedScreen.routes
         ) {
-            LikedScreen(
-                navController = navController,
+            PlacesNavigation(
                 viewModel = viewModel
             )
         }
