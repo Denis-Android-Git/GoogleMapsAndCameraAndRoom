@@ -20,6 +20,7 @@ import com.example.myapplication.domain.ILocationService
 import com.example.myapplication.domain.UpdateLocationUseCase
 import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import okhttp3.OkHttpClient
@@ -82,5 +83,5 @@ val module = module {
 
     viewModelOf(::MyViewModel)
     viewModelOf(::MapViewModel)
-
+    viewModelOf(::SearchViewModel)
 }
