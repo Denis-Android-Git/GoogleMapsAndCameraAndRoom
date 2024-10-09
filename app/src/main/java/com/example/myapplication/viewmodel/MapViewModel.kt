@@ -2,7 +2,7 @@ package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.DetailInfoDto
+import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.domain.GetInfoUseCase
 import com.example.myapplication.domain.GetLocationUseCase
 import com.example.myapplication.domain.GetPlacesUseCase

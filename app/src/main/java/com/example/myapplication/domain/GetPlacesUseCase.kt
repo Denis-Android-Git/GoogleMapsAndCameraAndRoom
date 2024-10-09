@@ -1,6 +1,6 @@
 package com.example.myapplication.domain
 
-import com.example.myapplication.data.PlacesRepository
+import com.example.myapplication.data.repository.PlacesRepository
 import com.example.myapplication.entity.Feature
 
 class GetPlacesUseCase(

@@ -3,6 +3,8 @@ package com.example.myapplication.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,12 +21,12 @@ import org.koin.androidx.compose.koinViewModel
 fun Navigation(
     viewModel: MyViewModel,
     navController: NavHostController,
-    mapViewModel: MapViewModel = koinViewModel(),
+    mapViewModel: MapViewModel = koinViewModel()
 ) {
-    val routeLink = viewModel.routeLink.collectAsState()
+    val routeLink by viewModel.routeLink.collectAsStateWithLifecycle()
 
-    LaunchedEffect(routeLink.value != null) {
-        routeLink.value?.let { navController.navigate(it) }
+    LaunchedEffect(routeLink) {
+        routeLink?.let { navController.navigate(it) }
     }
 
     NavHost(

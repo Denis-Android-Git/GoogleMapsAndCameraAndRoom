@@ -5,18 +5,20 @@ import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.Room
-import com.example.myapplication.data.AppDataBase
-import com.example.myapplication.data.BASE_URL
+import com.example.myapplication.data.db.AppDataBase
+import com.example.myapplication.data.api.BASE_URL
 import com.example.myapplication.data.Camera
-import com.example.myapplication.data.InfoRepository
-import com.example.myapplication.data.LocationService
-import com.example.myapplication.data.PlacesRepository
-import com.example.myapplication.data.RetrofitAndApi.PlacesApi
+import com.example.myapplication.data.repository.InfoRepository
+import com.example.myapplication.data.LocationServiceImpl
+import com.example.myapplication.data.repository.PlacesRepository
+import com.example.myapplication.data.api.RetrofitAndApi.PlacesApi
+import com.example.myapplication.data.repository.SearchRepository
 import com.example.myapplication.domain.GetInfoUseCase
 import com.example.myapplication.domain.GetLocationUseCase
 import com.example.myapplication.domain.GetPlacesUseCase
 import com.example.myapplication.domain.GetsSpeedUseCase
 import com.example.myapplication.domain.ILocationService
+import com.example.myapplication.domain.SearchUseCase
 import com.example.myapplication.domain.UpdateLocationUseCase
 import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
@@ -39,7 +41,7 @@ val module = module {
         )
     }
     single<ILocationService> {
-        LocationService(androidContext(), get())
+        LocationServiceImpl(androidContext(), get())
     }
 
     single {
@@ -80,6 +82,8 @@ val module = module {
     factory { GetLocationUseCase(get()) }
     factory { GetsSpeedUseCase(get()) }
     factory { UpdateLocationUseCase(get()) }
+    factory { SearchRepository(get()) }
+    factory { SearchUseCase(get()) }
 
     viewModelOf(::MyViewModel)
     viewModelOf(::MapViewModel)

@@ -1,7 +1,7 @@
 package com.example.myapplication.domain
 
-import com.example.myapplication.data.DetailInfoDto
-import com.example.myapplication.data.InfoRepository
+import com.example.myapplication.data.dto.DetailInfoDto
+import com.example.myapplication.data.repository.InfoRepository
 
 class GetInfoUseCase(
     private val infoRepository: InfoRepository

@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.myapplication.data.States
 import com.example.myapplication.viewmodel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,6 +38,8 @@ fun SearchScreen(
 
     val isSearching by searchViewModel.isSearching.collectAsStateWithLifecycle()
 
+    val states by searchViewModel.states.collectAsStateWithLifecycle()
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary,
         topBar = {
@@ -42,7 +48,7 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(horizontal = if (isSearching) 0.dp else 16.dp),
                 shadowElevation = 10.dp,
-                colors =  SearchBarDefaults.colors(
+                colors = SearchBarDefaults.colors(
                     //containerColor = MaterialTheme.colorScheme.primary
                 ),
                 inputField = {
@@ -81,7 +87,25 @@ fun SearchScreen(
                 expanded = isSearching,
                 onExpandedChange = { searchViewModel.onExpandedChange() }
             ) {
+                when (val currentState = states) {
+                    is States.Error -> {
+                        currentState.error?.let { Text(it, color = Color.White) }
+                    }
 
+                    is States.Loading -> {
+                        CircularProgressIndicator()
+                    }
+
+                    is States.Success -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(currentState.list) {
+                                Text(text = it.properties.name, color = Color.White)
+                            }
+                        }
+                    }
+                }
             }
         }
     ) {

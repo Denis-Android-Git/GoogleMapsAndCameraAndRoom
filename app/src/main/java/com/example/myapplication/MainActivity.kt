@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -77,9 +78,12 @@ class MainActivity : FragmentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val deppLink = intent.data.toString()
-        scope.launch {
-            viewModel.setRoute(deppLink)
+        val deppLink = intent.data
+        Log.d("deppLink", deppLink.toString())
+        if (deppLink != null) {
+            scope.launch {
+                viewModel.setRoute(deppLink.toString())
+            }
         }
     }
 

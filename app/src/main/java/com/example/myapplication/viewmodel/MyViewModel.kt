@@ -2,7 +2,7 @@ package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.AppDataBase
+import com.example.myapplication.data.db.AppDataBase
 import com.example.myapplication.entity.db.Photo
 import com.example.myapplication.entity.db.Place
 import kotlinx.coroutines.delay
