@@ -3,10 +3,10 @@ package com.example.myapplication.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.DetailInfoDto
-import com.example.myapplication.domain.GetInfoUseCase
-import com.example.myapplication.domain.GetLocationUseCase
-import com.example.myapplication.domain.GetPlacesUseCase
-import com.example.myapplication.domain.GetsSpeedUseCase
+import com.example.myapplication.domain.usecase.GetInfoUseCase
+import com.example.myapplication.domain.usecase.GetLocationUseCase
+import com.example.myapplication.domain.usecase.GetPlacesUseCase
+import com.example.myapplication.domain.usecase.GetsSpeedUseCase
 import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ensureActive

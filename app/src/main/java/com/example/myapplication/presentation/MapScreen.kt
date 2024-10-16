@@ -104,8 +104,8 @@ fun MapScreen(
 
     val cameraPositionState = rememberCameraPositionState()
 
-    location?.let {
-        LaunchedEffect(key1 = location) {
+    LaunchedEffect(key1 = location) {
+        location?.let {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
         }
     }
