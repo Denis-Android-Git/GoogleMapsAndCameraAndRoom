@@ -22,9 +22,13 @@ class RetrofitAndApi {
             @Path("xid") xid: String
         ): DetailInfoDto
 
-        @GET("/0.1/ru/places/bbox?apikey=5ae2e3f221c38a28845f05b6264a26c0455ff3893a3c0bb528719ce4&lon_min=37.6&lat_min=55.7&lon_max=37.9&lat_max=55.8")
+        @GET("/0.1/ru/places/bbox?apikey=5ae2e3f221c38a28845f05b6264a26c0455ff3893a3c0bb528719ce4")
         suspend fun search(
-            @Query("name") name: String
+            @Query("name") name: String,
+            @Query("lon_min") lon_min: Double?,
+            @Query("lat_min") lat_min: Double?,
+            @Query("lon_max") lon_max: Double?,
+            @Query("lat_max") lat_max: Double?
         ): PlacesDto
     }
 }

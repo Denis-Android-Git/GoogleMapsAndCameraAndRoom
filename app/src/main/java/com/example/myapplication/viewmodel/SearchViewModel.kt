@@ -6,11 +6,13 @@ import com.example.myapplication.data.States
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.SearchUseCase
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class SearchViewModel(
     private val searchUseCase: SearchUseCase,
@@ -42,6 +44,8 @@ class SearchViewModel(
 
     private val _polygonPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val polygonPoints = _polygonPoints.asStateFlow()
+    private val _data = MutableStateFlow<List<String>>(emptyList())
+    val data = _data.asStateFlow()
 
     fun setLeftBottomPoint(coordinates: LatLng) {
         viewModelScope.launch {
@@ -51,6 +55,10 @@ class SearchViewModel(
 
     fun clearPolygonPoints() {
         viewModelScope.launch {
+            _states.value = States.Success(null)
+            _searchText.value = ""
+            delay(50)
+            _data.value = emptyList()
             _polygonPoints.value = emptyList()
             _leftTopPoint.value = null
             _leftBottomPoint.value = null
@@ -59,7 +67,7 @@ class SearchViewModel(
         }
     }
 
-    fun setRightTopPoint(coordinates: LatLng) {
+    fun setAllPointsOfPolygon(coordinates: LatLng) {
         viewModelScope.launch {
             _rightTopPoint.value = coordinates // set right top point
 
@@ -94,36 +102,79 @@ class SearchViewModel(
         }
     }
 
-
-    fun onQueryChange(text: String) {
-        _searchText.value = text
-    }
-
-    fun onExpandedChange() {
-        _isSearching.value = !_isSearching.value
-        if (!_isSearching.value) {
-            onQueryChange("")
-        }
-    }
-
-    init {
+    fun search(query: String, leftBottomPoint: LatLng?, rightTopPoint: LatLng?) {
         viewModelScope.launch {
-            searchText.collect {
+            if (query.length > 2) {
                 try {
-                    if (it.length > 2) {
-                        _states.value = States.Loading
-                        val list = searchUseCase.execute(it)
-                        if (list.isEmpty()) {
-                            _states.value = States.Error("не найдено")
-                        } else {
-                            _states.value = States.Success(list)
-                        }
+                    _states.value = States.Loading
+                    val list = searchUseCase.execute(
+                        query,
+                        leftBottomPoint?.longitude,
+                        leftBottomPoint?.latitude,
+                        rightTopPoint?.longitude,
+                        rightTopPoint?.latitude
+                    )
+                    if (list.isEmpty()) {
+                        _states.value = States.Error("не найдено")
+                    } else {
+                        _states.value = States.Success(list)
                     }
+                } catch (e: HttpException) {
+                    _states.value = States.Error("Задайте точки поиска")
                 } catch (e: Exception) {
                     _states.value = States.Error(e.message)
                 }
             }
         }
+    }
+
+    fun onQueryChange(text: String) {
+        viewModelScope.launch {
+            _searchText.value = text
+        }
+    }
+
+//            combine(
+//                searchText,
+//                leftBottomPoint,
+//                rightTopPoint
+//            ) { searchTextValue, leftBottomPointValue, rightTopPointValue ->
+//                searchTextValue to Pair(leftBottomPointValue, rightTopPointValue)
+//            }.collectLatest {
+//                try {
+//                    if (it.first.length > 2) {
+//                        _states.value = States.Loading
+//                        delay(50)
+//                        val list = searchUseCase.execute(
+//                            it.first,
+//                            it.second.first?.longitude,
+//                            it.second.first?.latitude,
+//                            it.second.second?.longitude,
+//                            it.second.second?.latitude
+//                        )
+//                        if (list.isEmpty()) {
+//                            _states.value = States.Error("не найдено")
+//                        } else {
+//                            _states.value = States.Success(list)
+//                        }
+//                    }
+//                } catch (e: HttpException) {
+//                    _states.value = States.Error("Задайте точки поиска")
+//                } catch (e: Exception) {
+//                    _states.value = States.Error(e.message)
+//                }
+//            }
+
+    fun onExpandedChange() {
+        viewModelScope.launch {
+            _isSearching.value = !_isSearching.value
+            if (!_isSearching.value) {
+                onQueryChange("")
+            }
+        }
+    }
+
+    init {
         viewModelScope.launch {
             getLocationUseCase.invoke().collect {
                 _location.value = it

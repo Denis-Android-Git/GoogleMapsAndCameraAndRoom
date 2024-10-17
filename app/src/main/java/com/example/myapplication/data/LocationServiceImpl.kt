@@ -86,7 +86,7 @@ class LocationServiceImpl(
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.locations.lastOrNull()?.let {
                     val speedKmH = it.speed.times(3.6).toInt()
-                    Log.d("speedKmH", "requestSpeed=$speedKmH")
+                    //Log.d("speedKmH", "requestSpeed=$speedKmH")
                     trySend(speedKmH)
                 }
             }
