@@ -3,7 +3,6 @@ package com.example.myapplication.presentation
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,9 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.myapplication.R
 import com.example.myapplication.data.States
 import com.example.myapplication.entity.Feature
 import com.example.myapplication.viewmodel.SearchViewModel
@@ -71,6 +71,8 @@ fun SearchScreen(
 
     val polygonPoints by searchViewModel.polygonPoints.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
+
     var error by remember {
         mutableStateOf<String?>(null)
     }
@@ -79,7 +81,7 @@ fun SearchScreen(
         mutableStateOf<List<Feature>?>(null)
     }
 
-    var showErrorDialog by remember {
+    val showErrorDialog = remember {
         mutableStateOf(false)
     }
 
@@ -105,12 +107,18 @@ fun SearchScreen(
                         query = text,
                         onQueryChange = {
                             searchViewModel.onQueryChange(it)
-                            searchViewModel.search(it, leftBottomPoint, rightTopPoint)
+                            searchViewModel.search(
+                                it,
+                                leftBottomPoint,
+                                rightTopPoint,
+                                context.getString(R.string.not_found),
+                                context.getString(R.string.set_search_points)
+                            )
                         },
                         onSearch = searchViewModel::onQueryChange,
                         expanded = isSearching,
                         onExpandedChange = { searchViewModel.onExpandedChange() },
-                        placeholder = { Text("Поиск мест") },
+                        placeholder = { Text(stringResource(R.string.search_places)) },
                         leadingIcon = {
                             AnimatedVisibility(isSearching) {
                                 IconButton(
@@ -144,24 +152,6 @@ fun SearchScreen(
                         .padding(bottom = 100.dp)
                         .fillMaxSize()
                 ) {
-                    when (val currentState = states) {
-                        is States.Error -> {
-                            currentState.error?.let {
-                                showErrorDialog = true
-                                error = it
-                            }
-                        }
-
-                        is States.Loading -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-
-                        is States.Success -> {
-                            foundPlaces = currentState.list
-                        }
-                    }
 
                     val uiSettings by remember {
                         mutableStateOf(
@@ -250,26 +240,34 @@ fun SearchScreen(
                             )
                         }
                     }
+                    when (val currentState = states) {
+                        is States.Error -> {
+                            currentState.error?.let {
+                                showErrorDialog.value = true
+                                error = it
+                            }
+                        }
+
+                        is States.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                trackColor = Color.Red
+                            )
+                        }
+
+                        is States.Success -> {
+                            foundPlaces = currentState.list
+                        }
+                    }
                 }
             }
         }
     ) {
-        if (showErrorDialog) {
-            Dialog(
-                onDismissRequest = { showErrorDialog = false }
-            ) {
-                Column {
-                    Text(
-                        text = error ?: "",
-                        color = Color.Red
-                    )
-                    Button(
-                        onClick = { showErrorDialog = false }
-                    ) {
-                        Text(text = "Понятно")
-                    }
-                }
-            }
+        if (showErrorDialog.value) {
+            InfoDialog(
+                showErrorDialog = showErrorDialog,
+                error = error
+            )
         }
     }
 }

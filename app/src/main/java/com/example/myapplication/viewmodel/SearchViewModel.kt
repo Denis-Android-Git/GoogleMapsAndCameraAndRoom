@@ -102,7 +102,13 @@ class SearchViewModel(
         }
     }
 
-    fun search(query: String, leftBottomPoint: LatLng?, rightTopPoint: LatLng?) {
+    fun search(
+        query: String,
+        leftBottomPoint: LatLng?,
+        rightTopPoint: LatLng?,
+        emptyListError: String,
+        searchPointsError: String
+    ) {
         viewModelScope.launch {
             if (query.length > 2) {
                 try {
@@ -115,12 +121,12 @@ class SearchViewModel(
                         rightTopPoint?.latitude
                     )
                     if (list.isEmpty()) {
-                        _states.value = States.Error("не найдено")
+                        _states.value = States.Error(emptyListError)
                     } else {
                         _states.value = States.Success(list)
                     }
                 } catch (e: HttpException) {
-                    _states.value = States.Error("Задайте точки поиска")
+                    _states.value = States.Error(searchPointsError)
                 } catch (e: Exception) {
                     _states.value = States.Error(e.message)
                 }
@@ -133,37 +139,6 @@ class SearchViewModel(
             _searchText.value = text
         }
     }
-
-//            combine(
-//                searchText,
-//                leftBottomPoint,
-//                rightTopPoint
-//            ) { searchTextValue, leftBottomPointValue, rightTopPointValue ->
-//                searchTextValue to Pair(leftBottomPointValue, rightTopPointValue)
-//            }.collectLatest {
-//                try {
-//                    if (it.first.length > 2) {
-//                        _states.value = States.Loading
-//                        delay(50)
-//                        val list = searchUseCase.execute(
-//                            it.first,
-//                            it.second.first?.longitude,
-//                            it.second.first?.latitude,
-//                            it.second.second?.longitude,
-//                            it.second.second?.latitude
-//                        )
-//                        if (list.isEmpty()) {
-//                            _states.value = States.Error("не найдено")
-//                        } else {
-//                            _states.value = States.Success(list)
-//                        }
-//                    }
-//                } catch (e: HttpException) {
-//                    _states.value = States.Error("Задайте точки поиска")
-//                } catch (e: Exception) {
-//                    _states.value = States.Error(e.message)
-//                }
-//            }
 
     fun onExpandedChange() {
         viewModelScope.launch {

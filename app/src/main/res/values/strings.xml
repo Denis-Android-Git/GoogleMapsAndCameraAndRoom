@@ -2,4 +2,12 @@
     <string name="app_name">Maps And Places</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="got_it">Понятно</string>
+    <string name="not_found">Не найдено</string>
+    <string name="set_search_points">Задайте точки поиска</string>
+    <string name="search_places">Поиск мест</string>
+    <string name="search_here">Искать здесь</string>
+    <string name="_0_km_h">0 km/h</string>
+    <string name="km_h">%1$s km/h</string>
+    <string name="no_info">Нет информации</string>
 </resources>

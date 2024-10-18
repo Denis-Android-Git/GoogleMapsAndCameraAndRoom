@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +50,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.example.myapplication.R
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.entity.db.Place
 import com.example.myapplication.viewmodel.MapViewModel
@@ -176,16 +178,21 @@ fun MapScreen(
                         showButton = false
                     }
                 }) {
-                Text(text = "Искать здесь")
+                Text(text = stringResource(R.string.search_here))
             }
         }
 
-        TextComponent(
-            text = if (speed == null) "0 km/h" else "$speed km/h",
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .systemBarsPadding()
-        )
+        error?.let {
+            TextComponent(
+                text = if (speed == null) stringResource(R.string._0_km_h) else stringResource(
+                    R.string.km_h,
+                    it
+                ),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .systemBarsPadding()
+            )
+        }
 
         error?.let {
             TextComponent(
@@ -302,7 +309,8 @@ fun MapScreen(
                                     .wrapContentHeight()
                                     .padding(16.dp),
                                 maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                                text = it.wikipedia_extracts?.text ?: "Нет информации",
+                                text = it.wikipedia_extracts?.text
+                                    ?: stringResource(R.string.no_info),
                                 fontSize = 15.sp,
                                 color = if (isExpanded) Color.White else Color.Unspecified,
                                 style = MaterialTheme.typography.bodySmall
