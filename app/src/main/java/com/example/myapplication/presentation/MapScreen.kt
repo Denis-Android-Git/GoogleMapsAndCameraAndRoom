@@ -182,7 +182,7 @@ fun MapScreen(
             }
         }
 
-        error?.let {
+        speed?.let {
             TextComponent(
                 text = if (speed == null) stringResource(R.string._0_km_h) else stringResource(
                     R.string.km_h,

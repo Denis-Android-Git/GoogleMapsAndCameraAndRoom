@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,6 +62,8 @@ fun SearchScreen(
 
     val states by searchViewModel.states.collectAsStateWithLifecycle()
 
+    Log.d("states", "$states")
+
     val location by searchViewModel.location.collectAsStateWithLifecycle()
 
     val cameraPositionState = rememberCameraPositionState()
@@ -84,6 +87,9 @@ fun SearchScreen(
     val showErrorDialog = remember {
         mutableStateOf(false)
     }
+
+    Log.d("showErrorDialog", "${showErrorDialog.value}")
+
 
     LaunchedEffect(location) {
         location?.let {

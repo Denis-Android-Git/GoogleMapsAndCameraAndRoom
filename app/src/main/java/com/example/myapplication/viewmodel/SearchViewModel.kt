@@ -127,6 +127,8 @@ class SearchViewModel(
                     }
                 } catch (e: HttpException) {
                     _states.value = States.Error(searchPointsError)
+                    delay(100)
+                    _states.value = States.Success(emptyList())
                 } catch (e: Exception) {
                     _states.value = States.Error(e.message)
                 }
