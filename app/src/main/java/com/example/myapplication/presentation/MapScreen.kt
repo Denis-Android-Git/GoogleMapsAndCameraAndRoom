@@ -182,17 +182,15 @@ fun MapScreen(
             }
         }
 
-        speed?.let {
-            TextComponent(
-                text = if (speed == null) stringResource(R.string._0_km_h) else stringResource(
-                    R.string.km_h,
-                    it
-                ),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .systemBarsPadding()
-            )
-        }
+        TextComponent(
+            text = if (speed == null) stringResource(R.string._0_km_h) else stringResource(
+                R.string.km_h,
+                speed ?: ""
+            ),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .systemBarsPadding()
+        )
 
         error?.let {
             TextComponent(

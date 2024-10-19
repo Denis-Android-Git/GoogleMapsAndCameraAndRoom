@@ -90,6 +90,12 @@ fun SearchScreen(
 
     Log.d("showErrorDialog", "${showErrorDialog.value}")
 
+    if (showErrorDialog.value) {
+        InfoDialog(
+            showErrorDialog = showErrorDialog,
+            error = error
+        )
+    }
 
     LaunchedEffect(location) {
         location?.let {
@@ -269,11 +275,5 @@ fun SearchScreen(
             }
         }
     ) {
-        if (showErrorDialog.value) {
-            InfoDialog(
-                showErrorDialog = showErrorDialog,
-                error = error
-            )
-        }
     }
 }
