@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.States
 import com.example.myapplication.entity.Feature
@@ -54,7 +55,8 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    searchViewModel: SearchViewModel = koinViewModel()
+    searchViewModel: SearchViewModel = koinViewModel(),
+    navController: NavController
 ) {
     val text by searchViewModel.searchText.collectAsStateWithLifecycle()
 
@@ -84,15 +86,22 @@ fun SearchScreen(
         mutableStateOf<List<Feature>?>(null)
     }
 
-    val showErrorDialog = remember {
+    var showErrorDialog by remember {
         mutableStateOf(false)
     }
 
-    Log.d("showErrorDialog", "${showErrorDialog.value}")
+    var showInfo by remember {
+        mutableStateOf(false)
+    }
 
-    if (showErrorDialog.value) {
+    val detailInfoDto by searchViewModel.place.collectAsStateWithLifecycle()
+
+    Log.d("showErrorDialog", "$showErrorDialog")
+
+    if (showErrorDialog) {
         InfoDialog(
-            showErrorDialog = showErrorDialog,
+            onDismissRequest = { showErrorDialog = false },
+            onClick = { showErrorDialog = false },
             error = error
         )
     }
@@ -201,7 +210,16 @@ fun SearchScreen(
                                             place.geometry.coordinates[1],
                                             place.geometry.coordinates[0]
                                         )
-                                    )
+                                    ),
+                                    onInfoWindowClick = {
+                                        searchViewModel.getInfo(place.properties.xid)
+                                        if (place.properties.name.isNotEmpty()) {
+                                            showInfo = true
+                                        }
+                                    },
+                                    onInfoWindowClose = {
+                                        showInfo = false
+                                    }
                                 ) {
                                     Text(text = place.properties.name, color = Color.Red)
                                 }
@@ -252,10 +270,23 @@ fun SearchScreen(
                             )
                         }
                     }
+                    androidx.compose.animation.AnimatedVisibility(
+                        showInfo,
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        detailInfoDto?.let {
+                            DetailInfoComponent(
+                                modifier = Modifier,
+                                detailInfoDto = it,
+                                navController = navController
+                            )
+                        }
+                    }
+
                     when (val currentState = states) {
                         is States.Error -> {
                             currentState.error?.let {
-                                showErrorDialog.value = true
+                                showErrorDialog = true
                                 error = it
                             }
                         }

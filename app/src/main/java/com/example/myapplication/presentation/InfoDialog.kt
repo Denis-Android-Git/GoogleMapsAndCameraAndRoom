@@ -8,9 +8,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,17 +20,18 @@ import com.example.myapplication.R
 
 @Composable
 fun InfoDialog(
-    showErrorDialog: MutableState<Boolean>,
+    onDismissRequest: () -> Unit,
+    onClick: () -> Unit,
     error: String?
 ) {
     Dialog(
-        onDismissRequest = { showErrorDialog.value = false }
+        onDismissRequest = onDismissRequest
     ) {
         Card(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 10.dp,
 
-            )
+                )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -47,7 +45,7 @@ fun InfoDialog(
                     textAlign = TextAlign.Center
                 )
                 Button(
-                    onClick = { showErrorDialog.value = false }
+                    onClick = onClick
                 ) {
                     Text(text = stringResource(R.string.got_it))
                 }
@@ -59,9 +57,9 @@ fun InfoDialog(
 @Preview
 @Composable
 fun InfoDialogPreview() {
-    val showErrorDialog = remember { mutableStateOf(false) }
     InfoDialog(
-        showErrorDialog = showErrorDialog,
+        onDismissRequest = {},
+        onClick = {},
         error = "Hello my name is ddddddddddddddddddddddddddddd"
     )
 }

@@ -3,8 +3,11 @@ package com.example.myapplication.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.States
+import com.example.myapplication.data.dto.DetailInfoDto
+import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.SearchUseCase
+import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +19,8 @@ import retrofit2.HttpException
 
 class SearchViewModel(
     private val searchUseCase: SearchUseCase,
-    private val getLocationUseCase: GetLocationUseCase
+    private val getLocationUseCase: GetLocationUseCase,
+    private val getInfoUseCase: GetInfoUseCase
 ) : ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -44,8 +48,19 @@ class SearchViewModel(
 
     private val _polygonPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val polygonPoints = _polygonPoints.asStateFlow()
-    private val _data = MutableStateFlow<List<String>>(emptyList())
-    val data = _data.asStateFlow()
+
+    private val _place = MutableStateFlow<DetailInfoDto?>(null)
+    val place = _place.asStateFlow()
+
+    fun getInfo(id: String) {
+        viewModelScope.launch {
+            try {
+                _place.value = getInfoUseCase.execute(id)
+            } catch (e: Exception) {
+                _states.value = States.Error(e.message)
+            }
+        }
+    }
 
     fun setLeftBottomPoint(coordinates: LatLng) {
         viewModelScope.launch {
@@ -58,7 +73,6 @@ class SearchViewModel(
             _states.value = States.Success(null)
             _searchText.value = ""
             delay(50)
-            _data.value = emptyList()
             _polygonPoints.value = emptyList()
             _leftTopPoint.value = null
             _leftBottomPoint.value = null
@@ -111,6 +125,7 @@ class SearchViewModel(
     ) {
         viewModelScope.launch {
             if (query.length > 2) {
+                _states.value = States.Success(emptyList())
                 try {
                     _states.value = States.Loading
                     val list = searchUseCase.execute(
@@ -122,6 +137,8 @@ class SearchViewModel(
                     )
                     if (list.isEmpty()) {
                         _states.value = States.Error(emptyListError)
+                        delay(100)
+                        _states.value = States.Success(emptyList())
                     } else {
                         _states.value = States.Success(list)
                     }

@@ -66,8 +66,7 @@ fun Navigation(
         ) {
             MapScreen(
                 mapViewModel = mapViewModel,
-                navController = navController,
-                myViewModel = viewModel
+                navController = navController
             )
         }
         composable(
@@ -85,7 +84,9 @@ fun Navigation(
         composable(
             route = Destinations.SearchScreen.routes
         ) {
-            SearchScreen()
+            SearchScreen(
+                navController = navController
+            )
         }
     }
 }
