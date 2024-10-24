@@ -51,6 +51,16 @@ class MapViewModel(
         }
     }
 
+    init {
+        viewModelScope.launch {
+            location.collect { location ->
+                location?.let {
+                    getPlaces(it.longitude, it.latitude)
+                }
+            }
+        }
+    }
+
     fun getPlaces(
         lon: Double,
         lat: Double

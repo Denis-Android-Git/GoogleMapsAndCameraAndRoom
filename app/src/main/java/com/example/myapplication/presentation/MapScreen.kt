@@ -83,11 +83,7 @@ fun SharedTransitionScope.MapScreen(
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
         }
     }
-    location?.let {
-        LaunchedEffect(key1 = location) {
-            mapViewModel.getPlaces(it.longitude, it.latitude)
-        }
-    }
+
     var showButton by remember {
         mutableStateOf(false)
     }
