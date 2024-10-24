@@ -1,6 +1,10 @@
 package com.example.myapplication.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,12 +49,14 @@ import com.example.myapplication.viewmodel.MyViewModel
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailScreen(
+fun SharedTransitionScope.DetailScreen(
     image: String,
     date: String?,
     navController: NavController,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     LaunchedEffect(Unit) {
         viewModel.getPhotoById(image)
@@ -74,6 +80,13 @@ fun DetailScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .border(2.dp, Color.Gray, RoundedCornerShape(16.dp))
                     .align(Alignment.Center)
+                    .sharedElement(
+                        state = rememberSharedContentState(key = it),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 1000)
+                        }
+                    )
                     .fillMaxWidth(),
                 model = it,
                 contentDescription = null

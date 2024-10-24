@@ -3,6 +3,9 @@ package com.example.myapplication.presentation
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,11 +55,12 @@ import com.google.maps.android.compose.rememberMarkerState
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SearchScreen(
+fun SharedTransitionScope.SearchScreen(
     searchViewModel: SearchViewModel = koinViewModel(),
-    navController: NavController
+    navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val text by searchViewModel.searchText.collectAsStateWithLifecycle()
 
@@ -278,7 +282,8 @@ fun SearchScreen(
                             DetailInfoComponent(
                                 modifier = Modifier,
                                 detailInfoDto = it,
-                                navController = navController
+                                navController = navController,
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         }
                     }

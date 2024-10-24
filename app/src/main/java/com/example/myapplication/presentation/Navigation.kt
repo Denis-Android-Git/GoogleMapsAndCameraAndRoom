@@ -1,8 +1,9 @@
 package com.example.myapplication.presentation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -17,6 +18,7 @@ import com.example.myapplication.viewmodel.MapViewModel
 import com.example.myapplication.viewmodel.MyViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun Navigation(
     viewModel: MyViewModel,
@@ -29,64 +31,70 @@ fun Navigation(
         routeLink?.let { navController.navigate(it) }
     }
 
-    NavHost(
-        //modifier = modifier,
-        navController = navController, startDestination = Destinations.MapScreen.routes
-    ) {
-        composable(
-            route = Destinations.DetailScreen.routes + "/{name}/{date}",
-            arguments = listOf(
-                navArgument("name") {
-                    type = NavType.StringType
-                    defaultValue = "No photo"
-                    nullable = false
-                },
-                navArgument("date") {
-                    type = NavType.StringType
-                    defaultValue = "No date"
-                    nullable = false
+
+    SharedTransitionLayout {
+        NavHost(
+            //modifier = modifier,
+            navController = navController, startDestination = Destinations.MapScreen.routes
+        ) {
+            composable(
+                route = Destinations.DetailScreen.routes + "/{name}/{date}",
+                arguments = listOf(
+                    navArgument("name") {
+                        type = NavType.StringType
+                        defaultValue = "No photo"
+                        nullable = false
+                    },
+                    navArgument("date") {
+                        type = NavType.StringType
+                        defaultValue = "No date"
+                        nullable = false
+                    }
+                )
+            ) { entry ->
+                val image = entry.arguments?.getString("name")
+                image?.let {
+                    DetailScreen(
+                        image = it,
+                        date = entry.arguments?.getString("date"),
+                        navController = navController,
+                        viewModel = viewModel,
+                        animatedVisibilityScope = this
+                    )
                 }
-            )
-        ) { entry ->
-            val image = entry.arguments?.getString("name")
-            image?.let {
-                DetailScreen(
-                    image = it,
-                    date = entry.arguments?.getString("date"),
+            }
+            composable(
+                route = Destinations.MapScreen.routes,
+                deepLinks = listOf(navDeepLink {
+                    uriPattern = "$URI/${Destinations.MapScreen.routes}"
+                })
+            ) {
+                MapScreen(
+                    mapViewModel = mapViewModel,
                     navController = navController,
+                    animatedVisibilityScope = this
+                )
+            }
+            composable(
+                route = Destinations.XmlMap.routes
+            ) {
+                XmlMap()
+            }
+            composable(
+                route = Destinations.LikedScreen.routes
+            ) {
+                PlacesNavigation(
                     viewModel = viewModel
                 )
             }
-        }
-        composable(
-            route = Destinations.MapScreen.routes,
-            deepLinks = listOf(navDeepLink {
-                uriPattern = "$URI/${Destinations.MapScreen.routes}"
-            })
-        ) {
-            MapScreen(
-                mapViewModel = mapViewModel,
-                navController = navController
-            )
-        }
-        composable(
-            route = Destinations.XmlMap.routes
-        ) {
-            XmlMap()
-        }
-        composable(
-            route = Destinations.LikedScreen.routes
-        ) {
-            PlacesNavigation(
-                viewModel = viewModel
-            )
-        }
-        composable(
-            route = Destinations.SearchScreen.routes
-        ) {
-            SearchScreen(
-                navController = navController
-            )
+            composable(
+                route = Destinations.SearchScreen.routes
+            ) {
+                SearchScreen(
+                    navController = navController,
+                    animatedVisibilityScope = this
+                )
+            }
         }
     }
 }

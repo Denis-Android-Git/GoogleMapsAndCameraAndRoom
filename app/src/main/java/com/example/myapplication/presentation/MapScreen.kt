@@ -2,6 +2,9 @@ package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,11 +42,13 @@ import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @SuppressLint("MissingPermission")
 @Composable
-fun MapScreen(
+fun SharedTransitionScope.MapScreen(
     mapViewModel: MapViewModel,
-    navController: NavController
+    navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val info by mapViewModel.detailInfo.collectAsState()
     val places by mapViewModel.places.collectAsState()
@@ -170,7 +175,8 @@ fun MapScreen(
                 DetailInfoComponent(
                     modifier = Modifier.align(Alignment.Center),
                     detailInfoDto = it,
-                    navController = navController
+                    navController = navController,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }

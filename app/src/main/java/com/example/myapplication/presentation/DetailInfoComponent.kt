@@ -1,8 +1,12 @@
 package com.example.myapplication.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -51,12 +55,14 @@ import org.koin.androidx.compose.koinViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailInfoComponent(
+fun SharedTransitionScope.DetailInfoComponent(
     modifier: Modifier,
     myViewModel: MyViewModel = koinViewModel(),
     detailInfoDto: DetailInfoDto,
-    navController: NavController
+    navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val placeList by myViewModel.allPlaces.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -110,6 +116,13 @@ fun DetailInfoComponent(
                                     )
                                 )
                             }
+                            .sharedElement(
+                                state = rememberSharedContentState(key = "${detailInfoDto.preview?.source}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ ->
+                                    tween(durationMillis = 1000)
+                                }
+                            )
                             .border(2.dp, Color.Gray, RoundedCornerShape(16.dp)),
                         model = detailInfoDto.preview?.source,
                         contentDescription = null
