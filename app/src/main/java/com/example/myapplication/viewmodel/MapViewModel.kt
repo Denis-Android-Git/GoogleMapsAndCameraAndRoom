@@ -1,5 +1,6 @@
 package com.example.myapplication.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.DetailInfoDto
@@ -11,7 +12,10 @@ import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MapViewModel(
@@ -21,7 +25,16 @@ class MapViewModel(
     private val getLocationUseCase: GetLocationUseCase
 ) : ViewModel() {
     private var _places = MutableStateFlow<List<Feature>>(emptyList())
-    val places = _places.asStateFlow()
+    val places = _places
+        .onStart {
+            Log.d("onStartinitialGetPlaces", "onStart")
+            initialGetPlaces()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
     private var _detailInfo = MutableStateFlow<DetailInfoDto?>(null)
     val detailInfo = _detailInfo.asStateFlow()
@@ -51,12 +64,17 @@ class MapViewModel(
         }
     }
 
-    init {
+    private fun initialGetPlaces() {
         viewModelScope.launch {
-            location.collect { location ->
-                location?.let {
-                    getPlaces(it.longitude, it.latitude)
+            try {
+                location.collect { location ->
+                    location?.let {
+                        _places.value = getPlacesUseCase.execute(it.longitude, it.latitude)
+                    }
                 }
+            } catch (e: Exception) {
+                coroutineContext.ensureActive()
+                _error.value = "No connection"
             }
         }
     }

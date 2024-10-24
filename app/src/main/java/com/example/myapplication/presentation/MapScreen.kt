@@ -15,7 +15,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.viewmodel.MapViewModel
@@ -50,11 +50,11 @@ fun SharedTransitionScope.MapScreen(
     navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val info by mapViewModel.detailInfo.collectAsState()
-    val places by mapViewModel.places.collectAsState()
-    val speed by mapViewModel.speed.collectAsState()
-    val error by mapViewModel.error.collectAsState()
-    val location by mapViewModel.location.collectAsState()
+    val info by mapViewModel.detailInfo.collectAsStateWithLifecycle()
+    val places by mapViewModel.places.collectAsStateWithLifecycle()
+    val speed by mapViewModel.speed.collectAsStateWithLifecycle()
+    val error by mapViewModel.error.collectAsStateWithLifecycle()
+    val location by mapViewModel.location.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     val uiSettings by remember {
