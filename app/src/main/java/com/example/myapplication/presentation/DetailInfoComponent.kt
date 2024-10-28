@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,11 +65,12 @@ fun SharedTransitionScope.DetailInfoComponent(
     navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val placeList by myViewModel.allPlaces.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    val placeInDb = placeList.find { place ->
-        place.id == detailInfoDto.xid
+    LaunchedEffect(detailInfoDto) {
+        myViewModel.findPlaceInDb(detailInfoDto.xid)
     }
+
+    val scope = rememberCoroutineScope()
+    val placeInDb by myViewModel.placeInDb.collectAsStateWithLifecycle()
     val interactionSource = remember { MutableInteractionSource() }
     var isExpanded by remember {
         mutableStateOf(false)
@@ -150,7 +152,8 @@ fun SharedTransitionScope.DetailInfoComponent(
                             .align(Alignment.CenterVertically),
                         onClick = {
                             scope.launch {
-                                if (placeInDb == null) {
+                                val currentPlace = placeInDb
+                                if (currentPlace == null) {
                                     val place = Place(
                                         id = detailInfoDto.xid,
                                         title = detailInfoDto.name,
@@ -160,7 +163,7 @@ fun SharedTransitionScope.DetailInfoComponent(
                                     )
                                     myViewModel.addPlace(place)
                                 } else {
-                                    myViewModel.deletePlace(placeInDb)
+                                    myViewModel.deletePlace(currentPlace)
                                 }
                             }
                         }
@@ -192,7 +195,8 @@ fun SharedTransitionScope.DetailInfoComponent(
                         .align(Alignment.CenterVertically),
                     onClick = {
                         scope.launch {
-                            if (placeInDb == null) {
+                            val currentPlace = placeInDb
+                            if (currentPlace == null) {
                                 val place = Place(
                                     id = detailInfoDto.xid,
                                     title = detailInfoDto.name,
@@ -202,7 +206,7 @@ fun SharedTransitionScope.DetailInfoComponent(
                                 )
                                 myViewModel.addPlace(place)
                             } else {
-                                myViewModel.deletePlace(placeInDb)
+                                myViewModel.deletePlace(currentPlace)
                             }
                         }
                     }

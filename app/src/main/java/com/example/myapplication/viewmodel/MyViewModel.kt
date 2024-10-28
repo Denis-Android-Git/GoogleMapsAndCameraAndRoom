@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -32,6 +33,19 @@ class MyViewModel(private val appDataBase: AppDataBase) : ViewModel() {
             SharingStarted.WhileSubscribed(5000),
             emptyList()
         )
+
+    private val _placeInDb = MutableStateFlow<Place?>(null)
+    val placeInDb = _placeInDb.asStateFlow()
+
+    fun findPlaceInDb(id: String) {
+        viewModelScope.launch {
+            allPlaces.collectLatest {
+                _placeInDb.value = it.find { place ->
+                    place.id == id
+                }
+            }
+        }
+    }
 
     val allPhotos = this.appDataBase.photoDao().getAll()
         .stateIn(

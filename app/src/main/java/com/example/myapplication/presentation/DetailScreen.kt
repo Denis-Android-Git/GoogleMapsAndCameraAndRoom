@@ -46,6 +46,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.viewmodel.MyViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -58,8 +59,13 @@ fun SharedTransitionScope.DetailScreen(
     viewModel: MyViewModel,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    var color by remember {
+        mutableStateOf(Color.Transparent)
+    }
     LaunchedEffect(Unit) {
         viewModel.getPhotoById(image)
+        delay(1000)
+        color = Color.Gray
     }
     val showDelete = !image.contains("https")
     val photo by viewModel.photo.collectAsStateWithLifecycle()
@@ -78,7 +84,7 @@ fun SharedTransitionScope.DetailScreen(
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .border(2.dp, Color.Gray, RoundedCornerShape(16.dp))
+                    .border(2.dp, color, RoundedCornerShape(16.dp))
                     .align(Alignment.Center)
                     .sharedElement(
                         state = rememberSharedContentState(key = it),

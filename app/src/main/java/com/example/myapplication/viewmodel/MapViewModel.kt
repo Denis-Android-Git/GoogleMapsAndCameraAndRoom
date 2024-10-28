@@ -48,6 +48,23 @@ class MapViewModel(
     private var _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
+    private val _showButton = MutableStateFlow(false)
+    val showButton = _showButton.asStateFlow()
+
+    fun setShowButtonValue(value: Boolean) {
+        viewModelScope.launch {
+            _showButton.value = value
+        }
+    }
+    private val _showText = MutableStateFlow(false)
+    val showText = _showText.asStateFlow()
+
+    fun setShowTextValue(value: Boolean) {
+        viewModelScope.launch {
+            _showText.value = value
+        }
+    }
+
     init {
         viewModelScope.launch {
             getsSpeedUseCase.invoke().collect {

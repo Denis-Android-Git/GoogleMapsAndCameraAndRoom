@@ -14,12 +14,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +56,8 @@ fun SharedTransitionScope.MapScreen(
     val error by mapViewModel.error.collectAsStateWithLifecycle()
     val location by mapViewModel.location.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
+    val showText by mapViewModel.showText.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -74,9 +76,13 @@ fun SharedTransitionScope.MapScreen(
         )
     }
 
-    var showText by remember { mutableStateOf(false) }
-
     val cameraPositionState = rememberCameraPositionState()
+
+    DisposableEffect(true) {
+        onDispose {
+            mapViewModel.setShowTextValue(false)
+        }
+    }
 
     LaunchedEffect(key1 = location) {
         location?.let {
@@ -84,13 +90,10 @@ fun SharedTransitionScope.MapScreen(
         }
     }
 
-    var showButton by remember {
-        mutableStateOf(false)
-    }
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = Unit) {
             delay(500)
-            showButton = true
+            mapViewModel.setShowButtonValue(true)
         }
     }
     Box(
@@ -114,11 +117,11 @@ fun SharedTransitionScope.MapScreen(
                     onInfoWindowClick = {
                         mapViewModel.getInfo(place.properties.xid)
                         if (place.properties.name.isNotEmpty()) {
-                            showText = true
+                            mapViewModel.setShowTextValue(true)
                         }
                     },
                     onInfoWindowClose = {
-                        showText = false
+                        mapViewModel.setShowTextValue(false)
                     }
                 ) {
                     Text(place.properties.name, color = Color.Red)
@@ -133,8 +136,7 @@ fun SharedTransitionScope.MapScreen(
             visible = showButton
         ) {
             Button(
-                colors = ButtonDefaults.buttonColors(
-                ),
+                colors = ButtonDefaults.buttonColors(),
                 onClick = {
                     scope.launch {
                         mapViewModel.clearPlaces()
@@ -143,7 +145,7 @@ fun SharedTransitionScope.MapScreen(
                             cameraPositionState.position.target.longitude,
                             cameraPositionState.position.target.latitude
                         )
-                        showButton = false
+                        mapViewModel.setShowButtonValue(false)
                     }
                 }) {
                 Text(text = stringResource(R.string.search_here))
