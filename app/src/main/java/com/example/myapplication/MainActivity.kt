@@ -17,9 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.data.Camera
 import com.example.myapplication.presentation.BottomNaviScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.viewmodel.MyViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.myapplication.viewmodel.IntentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -30,11 +28,9 @@ const val FILE_NAME = "dd-M-yyyy"
 
 class MainActivity : FragmentActivity() {
 
-    private val viewModel: MyViewModel by viewModel()
+    private val intentViewModel: IntentViewModel by viewModel()
 
     private lateinit var previewView: PreviewView
-
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val camera: Camera by inject { parametersOf(this, previewView) }
 
@@ -62,7 +58,7 @@ class MainActivity : FragmentActivity() {
                     setContent {
                         MyApplicationTheme {
                             BottomNaviScreen(
-                                viewModel = viewModel,
+                                viewModel = intentViewModel,
                             )
                         }
                     }
@@ -81,9 +77,7 @@ class MainActivity : FragmentActivity() {
         val deppLink = intent.data
         Log.d("deppLink", deppLink.toString())
         if (deppLink != null) {
-            scope.launch {
-                viewModel.setRoute(deppLink.toString())
-            }
+            intentViewModel.setRoute(deppLink.toString())
         }
     }
 

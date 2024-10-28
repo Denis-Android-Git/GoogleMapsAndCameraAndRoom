@@ -26,7 +26,7 @@ import androidx.navigation.NavController
 import coil.load
 import com.example.myapplication.data.Camera
 import com.example.myapplication.data.Destinations
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets
 fun CameraScreen(
     navController: NavController,
     camera: Camera,
-    viewModel: MyViewModel,
+    viewModel: DbViewModel,
     previewView: PreviewView
 ) {
     val photoList by viewModel.allPhotos.collectAsState()

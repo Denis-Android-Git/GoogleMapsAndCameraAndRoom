@@ -45,9 +45,11 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.data.Destinations
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
+import com.example.myapplication.viewmodel.DetailScreenViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -56,8 +58,9 @@ fun SharedTransitionScope.DetailScreen(
     image: String,
     date: String?,
     navController: NavController,
-    viewModel: MyViewModel,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    viewModel: DbViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    detailScreenViewModel: DetailScreenViewModel = koinViewModel()
 ) {
     var color by remember {
         mutableStateOf(Color.Transparent)
@@ -67,11 +70,12 @@ fun SharedTransitionScope.DetailScreen(
         delay(1000)
         color = Color.Gray
     }
-    val showDelete = !image.contains("https")
+    detailScreenViewModel.image.value = image
+    val showDelete = detailScreenViewModel.showDelete.value
     val photo by viewModel.photo.collectAsStateWithLifecycle()
 
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
-    var showImage by remember { mutableStateOf(true) }
+    val showDeleteConfirmation by detailScreenViewModel.showDeleteConfirmation.collectAsStateWithLifecycle()
+    val showImage by detailScreenViewModel.showImage.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
 
@@ -140,7 +144,7 @@ fun SharedTransitionScope.DetailScreen(
                 modifier = Modifier
                     .size(48.dp)
                     .background(Color.White, shape = CircleShape)
-                    .clickable { showDeleteConfirmation = true }
+                    .clickable { detailScreenViewModel.setShowDeleteConfirmationValue(true) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -152,7 +156,7 @@ fun SharedTransitionScope.DetailScreen(
         }
         if (showDeleteConfirmation) {
             AlertDialog(
-                onDismissRequest = { showDeleteConfirmation = false },
+                onDismissRequest = { detailScreenViewModel.setShowDeleteConfirmationValue(false) },
                 title = { Text("Confirmation") },
                 text = { Text("Are you sure?") },
                 confirmButton = {
@@ -164,8 +168,8 @@ fun SharedTransitionScope.DetailScreen(
                                     viewModel.deleteOnePhoto(photo = currentPhoto)
                                 }
 
-                                showDeleteConfirmation = false
-                                showImage = false
+                                detailScreenViewModel.setShowDeleteConfirmationValue(false)
+                                detailScreenViewModel.setShowImageValue(false)
                                 navController.navigate(Destinations.MainScreen.routes)
                             }
                         },
@@ -183,7 +187,7 @@ fun SharedTransitionScope.DetailScreen(
                 dismissButton = {
                     Button(
                         onClick = {
-                            showDeleteConfirmation = false
+                            detailScreenViewModel.setShowDeleteConfirmationValue(false)
                         },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)

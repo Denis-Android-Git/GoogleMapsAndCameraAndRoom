@@ -7,11 +7,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myapplication.data.Destinations
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
 
 @Composable
 fun PlacesNavigation(
-    viewModel: MyViewModel
+    viewModel: DbViewModel
 ) {
     val navController = rememberNavController()
 

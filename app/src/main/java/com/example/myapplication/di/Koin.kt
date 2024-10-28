@@ -5,23 +5,25 @@ import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.Room
-import com.example.myapplication.data.db.AppDataBase
-import com.example.myapplication.data.api.BASE_URL
 import com.example.myapplication.data.Camera
-import com.example.myapplication.data.repository.InfoRepository
 import com.example.myapplication.data.LocationServiceImpl
-import com.example.myapplication.data.repository.PlacesRepository
+import com.example.myapplication.data.api.BASE_URL
 import com.example.myapplication.data.api.RetrofitAndApi.PlacesApi
+import com.example.myapplication.data.db.AppDataBase
+import com.example.myapplication.data.repository.InfoRepository
+import com.example.myapplication.data.repository.PlacesRepository
 import com.example.myapplication.data.repository.SearchRepository
+import com.example.myapplication.domain.ILocationService
 import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.GetPlacesUseCase
 import com.example.myapplication.domain.usecase.GetsSpeedUseCase
-import com.example.myapplication.domain.ILocationService
 import com.example.myapplication.domain.usecase.SearchUseCase
 import com.example.myapplication.domain.usecase.UpdateLocationUseCase
+import com.example.myapplication.viewmodel.DbViewModel
+import com.example.myapplication.viewmodel.DetailScreenViewModel
+import com.example.myapplication.viewmodel.IntentViewModel
 import com.example.myapplication.viewmodel.MapViewModel
-import com.example.myapplication.viewmodel.MyViewModel
 import com.example.myapplication.viewmodel.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -85,7 +87,10 @@ val module = module {
     factory { SearchRepository(get()) }
     factory { SearchUseCase(get()) }
 
-    viewModelOf(::MyViewModel)
+    viewModelOf(::DbViewModel)
     viewModelOf(::MapViewModel)
     viewModelOf(::SearchViewModel)
+    viewModelOf(::IntentViewModel)
+    viewModelOf(::DetailScreenViewModel)
+
 }

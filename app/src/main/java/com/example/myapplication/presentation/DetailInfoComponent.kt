@@ -50,7 +50,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.entity.db.Place
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.net.URLEncoder
@@ -60,17 +60,17 @@ import java.nio.charset.StandardCharsets
 @Composable
 fun SharedTransitionScope.DetailInfoComponent(
     modifier: Modifier,
-    myViewModel: MyViewModel = koinViewModel(),
+    dbViewModel: DbViewModel = koinViewModel(),
     detailInfoDto: DetailInfoDto,
     navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     LaunchedEffect(detailInfoDto) {
-        myViewModel.findPlaceInDb(detailInfoDto.xid)
+        dbViewModel.findPlaceInDb(detailInfoDto.xid)
     }
 
     val scope = rememberCoroutineScope()
-    val placeInDb by myViewModel.placeInDb.collectAsStateWithLifecycle()
+    val placeInDb by dbViewModel.placeInDb.collectAsStateWithLifecycle()
     val interactionSource = remember { MutableInteractionSource() }
     var isExpanded by remember {
         mutableStateOf(false)
@@ -101,7 +101,6 @@ fun SharedTransitionScope.DetailInfoComponent(
         ) {
             AnimatedVisibility(isExpanded && detailInfoDto.wikipedia_extracts != null) {
                 //Log.d("Image", info!!.image)
-
                 Row {
                     SubcomposeAsyncImage(
                         modifier = Modifier
@@ -161,9 +160,9 @@ fun SharedTransitionScope.DetailInfoComponent(
                                         latitude = detailInfoDto.point.lat,
                                         longitude = detailInfoDto.point.lon
                                     )
-                                    myViewModel.addPlace(place)
+                                    dbViewModel.addPlace(place)
                                 } else {
-                                    myViewModel.deletePlace(currentPlace)
+                                    dbViewModel.deletePlace(currentPlace)
                                 }
                             }
                         }
@@ -204,9 +203,9 @@ fun SharedTransitionScope.DetailInfoComponent(
                                     latitude = detailInfoDto.point.lat,
                                     longitude = detailInfoDto.point.lon
                                 )
-                                myViewModel.addPlace(place)
+                                dbViewModel.addPlace(place)
                             } else {
-                                myViewModel.deletePlace(currentPlace)
+                                dbViewModel.deletePlace(currentPlace)
                             }
                         }
                     }

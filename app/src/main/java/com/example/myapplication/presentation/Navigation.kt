@@ -14,18 +14,20 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.data.URI
+import com.example.myapplication.viewmodel.DbViewModel
 import com.example.myapplication.viewmodel.MapViewModel
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.IntentViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun Navigation(
-    viewModel: MyViewModel,
+    intentViewModel: IntentViewModel,
     navController: NavHostController,
-    mapViewModel: MapViewModel = koinViewModel()
+    mapViewModel: MapViewModel = koinViewModel(),
+    dbViewModel: DbViewModel = koinViewModel()
 ) {
-    val routeLink by viewModel.routeLink.collectAsStateWithLifecycle()
+    val routeLink by intentViewModel.routeLink.collectAsStateWithLifecycle()
 
     LaunchedEffect(routeLink) {
         routeLink?.let { navController.navigate(it) }
@@ -58,7 +60,7 @@ fun Navigation(
                         image = it,
                         date = entry.arguments?.getString("date"),
                         navController = navController,
-                        viewModel = viewModel,
+                        viewModel = dbViewModel,
                         animatedVisibilityScope = this
                     )
                 }
@@ -84,7 +86,7 @@ fun Navigation(
                 route = Destinations.LikedScreen.routes
             ) {
                 PlacesNavigation(
-                    viewModel = viewModel
+                    viewModel = dbViewModel
                 )
             }
             composable(

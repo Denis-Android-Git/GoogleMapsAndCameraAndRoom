@@ -23,13 +23,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.entity.BottomItem
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.IntentViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BottomNaviScreen(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    viewModel: MyViewModel,
+    viewModel: IntentViewModel,
 ) {
     val navController = rememberNavController()
     val bottomItems = listOf(
@@ -90,7 +90,7 @@ fun BottomNaviScreen(
     ) {
         Navigation(
             navController = navController,
-            viewModel = viewModel
+            intentViewModel = viewModel
         )
     }
 }

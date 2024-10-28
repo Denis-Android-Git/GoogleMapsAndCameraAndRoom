@@ -13,14 +13,14 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.example.myapplication.FILE_NAME
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class Camera(
     private val lifecycleOwner: LifecycleOwner,
     private val context: Context,
-    private val viewModel: MyViewModel,
+    private val viewModel: DbViewModel,
     private val contentResolver: ContentResolver,
     private val previewView: PreviewView
 ) {

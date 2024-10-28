@@ -39,13 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.myapplication.entity.db.Place
-import com.example.myapplication.viewmodel.MyViewModel
+import com.example.myapplication.viewmodel.DbViewModel
 
 
 @Composable
 fun LikedScreen(
     navController: NavController,
-    viewModel: MyViewModel,
+    viewModel: DbViewModel,
     //deleteList: SnapshotStateList<Photo>,
     //camera: Camera
 ) {
