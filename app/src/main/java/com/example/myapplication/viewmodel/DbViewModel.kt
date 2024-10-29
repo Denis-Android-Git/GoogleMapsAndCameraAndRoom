@@ -14,6 +14,15 @@ import kotlinx.coroutines.launch
 
 class DbViewModel(private val appDataBase: AppDataBase) : ViewModel() {
 
+    private val _deleteList = MutableStateFlow<List<Place>>(emptyList())
+    val deleteList = _deleteList.asStateFlow()
+
+    fun changeDeleteList(deleteList: List<Place>) {
+        viewModelScope.launch {
+            _deleteList.value = deleteList
+        }
+    }
+
     private var _photo = MutableStateFlow<Photo?>(null)
     val photo = _photo.asStateFlow()
 

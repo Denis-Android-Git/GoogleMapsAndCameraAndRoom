@@ -15,6 +15,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,17 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.myapplication.R
 import com.example.myapplication.data.Destinations
 import com.example.myapplication.entity.db.Place
+import com.example.myapplication.viewmodel.DbViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,8 +42,11 @@ fun PhotoItem(
     modifier: Modifier,
     place: Place,
     navController: NavController,
-    deleteList: MutableList<Place>
+    dbViewModel: DbViewModel
 ) {
+    val deleteList by dbViewModel.deleteList.collectAsStateWithLifecycle()
+    val tempDeleteList = deleteList.toMutableList()
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -53,13 +57,16 @@ fun PhotoItem(
                 .combinedClickable(
                     onClick = {
                         navController.navigate(Destinations.MapScreen2.withArgs(place.id))
-                        deleteList.clear()
+                        tempDeleteList.clear()
+                        dbViewModel.changeDeleteList(tempDeleteList)
                     },
                     onLongClick = {
-                        if (deleteList.contains(place)) {
-                            deleteList.remove(place)
+                        if (tempDeleteList.contains(place)) {
+                            tempDeleteList.remove(place)
+                            dbViewModel.changeDeleteList(tempDeleteList)
                         } else {
-                            deleteList.add(place)
+                            tempDeleteList.add(place)
+                            dbViewModel.changeDeleteList(tempDeleteList)
                         }
                     }
                 )
@@ -109,22 +116,22 @@ fun PhotoItem(
         }
     }
 }
-
-@Preview
-@Composable
-fun PhotoItemPreview() {
-    val navController = rememberNavController()
-    val place = Place(
-        id = "",
-        title = "Собор большой огромный",
-        latitude = 0.0,
-        longitude = 0.0,
-        picture = null
-    )
-    PhotoItem(
-        modifier = Modifier,
-        deleteList = mutableListOf(),
-        navController = navController,
-        place = place
-    )
-}
+//
+//@Preview
+//@Composable
+//fun PhotoItemPreview() {
+//    val navController = rememberNavController()
+//    val place = Place(
+//        id = "",
+//        title = "Собор большой огромный",
+//        latitude = 0.0,
+//        longitude = 0.0,
+//        picture = null
+//    )
+//    PhotoItem(
+//        modifier = Modifier,
+//        //deleteList = mutableListOf(),
+//        navController = navController,
+//        place = place
+//    )
+//}

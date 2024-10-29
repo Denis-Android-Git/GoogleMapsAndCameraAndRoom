@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,19 +37,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.myapplication.entity.db.Place
 import com.example.myapplication.viewmodel.DbViewModel
 
 
 @Composable
 fun LikedScreen(
     navController: NavController,
-    viewModel: DbViewModel,
-    //deleteList: SnapshotStateList<Photo>,
-    //camera: Camera
+    viewModel: DbViewModel
 ) {
-
-    val deleteList = remember { mutableStateListOf<Place>() }
+    val deleteList by viewModel.deleteList.collectAsStateWithLifecycle()
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     val placeList by viewModel.allPlaces.collectAsStateWithLifecycle()
 
@@ -92,14 +87,17 @@ fun LikedScreen(
                             ),
                             place = place,
                             navController = navController,
-                            deleteList = deleteList
+                            dbViewModel = viewModel
                         )
                     }
                 }
             }
 
             if (showDeleteConfirmation && deleteList.isNotEmpty()) {
-                AlertDialog(onDismissRequest = { showDeleteConfirmation = false },
+                AlertDialog(onDismissRequest = {
+                    showDeleteConfirmation = false
+                    viewModel.changeDeleteList(emptyList())
+                },
                     title = { Text("Confirmation") },
                     text = { Text("Delete all or selected?") },
                     confirmButton = {
@@ -109,7 +107,7 @@ fun LikedScreen(
                                     viewModel.deletePlace(it)
                                 }
                                 showDeleteConfirmation = false
-                                deleteList.clear()
+                                viewModel.changeDeleteList(emptyList())
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -125,7 +123,7 @@ fun LikedScreen(
                             onClick = {
                                 viewModel.deleteAllPlaces()
                                 showDeleteConfirmation = false
-                                deleteList.clear()
+                                viewModel.changeDeleteList(emptyList())
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -142,7 +140,7 @@ fun LikedScreen(
                         Button(
                             onClick = {
                                 showDeleteConfirmation = false
-                                deleteList.clear()
+                                viewModel.changeDeleteList(emptyList())
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
