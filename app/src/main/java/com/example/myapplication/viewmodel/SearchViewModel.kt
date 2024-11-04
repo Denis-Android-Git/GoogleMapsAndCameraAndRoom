@@ -57,6 +57,12 @@ class SearchViewModel(
     private var _foundPlaces = MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
     val foundPlaces = _foundPlaces.asStateFlow()
 
+    fun changeState(value: States) {
+        viewModelScope.launch {
+            _states.value = value
+        }
+    }
+
     fun getInfo(id: String) {
         viewModelScope.launch {
             try {
@@ -146,8 +152,6 @@ class SearchViewModel(
                     if (list.isEmpty()) {
                         _states.value = States.Error
                         _error.value = emptyListError
-                        delay(100)
-                        _states.value = States.Success
                         _foundPlaces.value = emptyList()
                     } else {
                         _states.value = States.Success
@@ -156,8 +160,6 @@ class SearchViewModel(
                 } catch (e: HttpException) {
                     _states.value = States.Error
                     _error.value = searchPointsError
-                    delay(100)
-                    _states.value = States.Success
                     _foundPlaces.value = emptyList()
                 } catch (e: Exception) {
                     _states.value = States.Error

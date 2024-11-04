@@ -85,24 +85,10 @@ fun SharedTransitionScope.SearchScreen(
 
     val foundPlaces by searchViewModel.foundPlaces.collectAsStateWithLifecycle()
 
-    var showErrorDialog by remember {
-        mutableStateOf(false)
-    }
-
     val detailInfoDto by searchViewModel.place.collectAsStateWithLifecycle()
 
     var showInfo by remember {
         mutableStateOf(false)
-    }
-
-    Log.d("showErrorDialog", "$showErrorDialog")
-
-    if (showErrorDialog) {
-        InfoDialog(
-            onDismissRequest = { showErrorDialog = false },
-            onClick = { showErrorDialog = false },
-            error = error
-        )
     }
 
     LaunchedEffect(location) {
@@ -286,7 +272,11 @@ fun SharedTransitionScope.SearchScreen(
                     when (states) {
                         is States.Error -> {
                             error?.let {
-                                showErrorDialog = true
+                                InfoDialog(
+                                    onDismissRequest = { searchViewModel.changeState(States.Success) },
+                                    onClick = { searchViewModel.changeState(States.Success) },
+                                    error = it
+                                )
                             }
                         }
 
