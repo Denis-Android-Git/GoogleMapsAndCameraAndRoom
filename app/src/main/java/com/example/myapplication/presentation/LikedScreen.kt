@@ -54,7 +54,6 @@ fun LikedScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
             .padding(bottom = 100.dp)
-
     ) {
         Box(
             modifier = Modifier

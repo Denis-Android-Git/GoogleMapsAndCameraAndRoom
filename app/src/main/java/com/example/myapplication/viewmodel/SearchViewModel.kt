@@ -7,7 +7,6 @@ import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.SearchUseCase
-import com.example.myapplication.entity.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +27,7 @@ class SearchViewModel(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _states = MutableStateFlow<States>(States.Success(emptyList()))
+    private val _states = MutableStateFlow<States>(States.Success)
     val states = _states.asStateFlow()
 
     private val _location = MutableStateFlow<LatLng?>(null)
@@ -52,12 +51,19 @@ class SearchViewModel(
     private val _place = MutableStateFlow<DetailInfoDto?>(null)
     val place = _place.asStateFlow()
 
+    private var _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
+    private var _foundPlaces = MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
+    val foundPlaces = _foundPlaces.asStateFlow()
+
     fun getInfo(id: String) {
         viewModelScope.launch {
             try {
                 _place.value = getInfoUseCase.execute(id)
             } catch (e: Exception) {
-                _states.value = States.Error(e.message)
+                _states.value = States.Error
+                _error.value = e.message
             }
         }
     }
@@ -70,7 +76,8 @@ class SearchViewModel(
 
     fun clearPolygonPoints() {
         viewModelScope.launch {
-            _states.value = States.Success(null)
+            _states.value = States.Success
+            _foundPlaces.value = null
             _searchText.value = ""
             delay(50)
             _polygonPoints.value = emptyList()
@@ -125,7 +132,8 @@ class SearchViewModel(
     ) {
         viewModelScope.launch {
             if (query.length > 2) {
-                _states.value = States.Success(emptyList())
+                _states.value = States.Success
+                _foundPlaces.value = emptyList()
                 try {
                     _states.value = States.Loading
                     val list = searchUseCase.execute(
@@ -136,18 +144,24 @@ class SearchViewModel(
                         rightTopPoint?.latitude
                     )
                     if (list.isEmpty()) {
-                        _states.value = States.Error(emptyListError)
+                        _states.value = States.Error
+                        _error.value = emptyListError
                         delay(100)
-                        _states.value = States.Success(emptyList())
+                        _states.value = States.Success
+                        _foundPlaces.value = emptyList()
                     } else {
-                        _states.value = States.Success(list)
+                        _states.value = States.Success
+                        _foundPlaces.value = list
                     }
                 } catch (e: HttpException) {
-                    _states.value = States.Error(searchPointsError)
+                    _states.value = States.Error
+                    _error.value = searchPointsError
                     delay(100)
-                    _states.value = States.Success(emptyList())
+                    _states.value = States.Success
+                    _foundPlaces.value = emptyList()
                 } catch (e: Exception) {
-                    _states.value = States.Error(e.message)
+                    _states.value = States.Error
+                    _error.value = e.message
                 }
             }
         }

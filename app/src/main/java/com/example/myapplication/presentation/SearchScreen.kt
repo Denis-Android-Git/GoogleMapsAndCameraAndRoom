@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.States
-import com.example.myapplication.entity.Feature
 import com.example.myapplication.viewmodel.SearchViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -82,23 +81,19 @@ fun SharedTransitionScope.SearchScreen(
 
     val context = LocalContext.current
 
-    var error by remember {
-        mutableStateOf<String?>(null)
-    }
+    val error by searchViewModel.error.collectAsStateWithLifecycle()
 
-    var foundPlaces by remember {
-        mutableStateOf<List<Feature>?>(null)
-    }
+    val foundPlaces by searchViewModel.foundPlaces.collectAsStateWithLifecycle()
 
     var showErrorDialog by remember {
         mutableStateOf(false)
     }
 
+    val detailInfoDto by searchViewModel.place.collectAsStateWithLifecycle()
+
     var showInfo by remember {
         mutableStateOf(false)
     }
-
-    val detailInfoDto by searchViewModel.place.collectAsStateWithLifecycle()
 
     Log.d("showErrorDialog", "$showErrorDialog")
 
@@ -288,11 +283,10 @@ fun SharedTransitionScope.SearchScreen(
                         }
                     }
 
-                    when (val currentState = states) {
+                    when (states) {
                         is States.Error -> {
-                            currentState.error?.let {
+                            error?.let {
                                 showErrorDialog = true
-                                error = it
                             }
                         }
 
@@ -304,7 +298,7 @@ fun SharedTransitionScope.SearchScreen(
                         }
 
                         is States.Success -> {
-                            foundPlaces = currentState.list
+
                         }
                     }
                 }
