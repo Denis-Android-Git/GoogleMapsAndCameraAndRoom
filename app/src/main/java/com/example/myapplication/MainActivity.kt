@@ -25,6 +25,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 const val FILE_NAME = "dd-M-yyyy"
+const val IS_FIRST_RUN = "isFirstRun"
+const val PREFS = "PREFS"
 
 class MainActivity : FragmentActivity() {
 

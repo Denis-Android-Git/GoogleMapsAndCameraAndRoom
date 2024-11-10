@@ -1,7 +1,10 @@
 package com.example.myapplication.viewmodel
 
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.IS_FIRST_RUN
 import com.example.myapplication.data.States
 import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.domain.usecase.GetInfoUseCase
@@ -19,7 +22,8 @@ import retrofit2.HttpException
 class SearchViewModel(
     private val searchUseCase: SearchUseCase,
     private val getLocationUseCase: GetLocationUseCase,
-    private val getInfoUseCase: GetInfoUseCase
+    private val getInfoUseCase: GetInfoUseCase,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -54,8 +58,30 @@ class SearchViewModel(
     private var _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    private var _foundPlaces = MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
+    private val isFirstRun = sharedPreferences.getBoolean(IS_FIRST_RUN, true)
+
+    private var _foundPlaces =
+        MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
     val foundPlaces = _foundPlaces.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            getLocationUseCase.invoke().collect {
+                _location.value = it
+            }
+        }
+    }
+
+    fun checkFirstRun(error: String) {
+        viewModelScope.launch {
+            Log.d("isFirstRun", "$isFirstRun")
+            if (isFirstRun) {
+                _states.value = States.Error
+                _error.value = error
+                sharedPreferences.edit().putBoolean(IS_FIRST_RUN, false).apply()
+            }
+        }
+    }
 
     fun changeState(value: States) {
         viewModelScope.launch {
@@ -180,14 +206,6 @@ class SearchViewModel(
             _isSearching.value = !_isSearching.value
             if (!_isSearching.value) {
                 onQueryChange("")
-            }
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            getLocationUseCase.invoke().collect {
-                _location.value = it
             }
         }
     }

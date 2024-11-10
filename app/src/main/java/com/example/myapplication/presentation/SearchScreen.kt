@@ -83,6 +83,8 @@ fun SharedTransitionScope.SearchScreen(
 
     val error by searchViewModel.error.collectAsStateWithLifecycle()
 
+    Log.d("error", "$error")
+
     val foundPlaces by searchViewModel.foundPlaces.collectAsStateWithLifecycle()
 
     val detailInfoDto by searchViewModel.place.collectAsStateWithLifecycle()
@@ -153,6 +155,9 @@ fun SharedTransitionScope.SearchScreen(
                 expanded = isSearching,
                 onExpandedChange = { searchViewModel.onExpandedChange() }
             ) {
+                LaunchedEffect(Unit) {
+                    searchViewModel.checkFirstRun(context.getString(R.string.set_search_points_first_run))
+                }
                 Box(
                     modifier = Modifier
                         .padding(bottom = 100.dp)

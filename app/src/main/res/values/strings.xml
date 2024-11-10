@@ -10,4 +10,5 @@
     <string name="_0_km_h">0 km/h</string>
     <string name="km_h">%1$s km/h</string>
     <string name="no_info">Нет информации</string>
+    <string name="set_search_points_first_run">Задайте левую нижнюю и правую верхнюю точку квадрата поиска</string>
 </resources>
