@@ -23,7 +23,6 @@ class SearchViewModel(
     private val searchUseCase: SearchUseCase,
     private val getLocationUseCase: GetLocationUseCase,
     private val getInfoUseCase: GetInfoUseCase,
-    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -58,8 +57,6 @@ class SearchViewModel(
     private var _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    private val isFirstRun = sharedPreferences.getBoolean(IS_FIRST_RUN, true)
-
     private var _foundPlaces =
         MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
     val foundPlaces = _foundPlaces.asStateFlow()
@@ -72,13 +69,14 @@ class SearchViewModel(
         }
     }
 
-    fun checkFirstRun(error: String) {
+    fun checkFirstRun(error: String, prefs: SharedPreferences) {
         viewModelScope.launch {
+            val isFirstRun = prefs.getBoolean(IS_FIRST_RUN, true)
             Log.d("isFirstRun", "$isFirstRun")
             if (isFirstRun) {
                 _states.value = States.Error
                 _error.value = error
-                sharedPreferences.edit().putBoolean(IS_FIRST_RUN, false).apply()
+                prefs.edit().putBoolean(IS_FIRST_RUN, false).apply()
             }
         }
     }

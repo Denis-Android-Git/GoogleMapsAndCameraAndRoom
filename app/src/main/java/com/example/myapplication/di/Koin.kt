@@ -1,12 +1,10 @@
 package com.example.myapplication.di
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.Room
-import com.example.myapplication.PREFS
 import com.example.myapplication.data.Camera
 import com.example.myapplication.data.LocationServiceImpl
 import com.example.myapplication.data.api.BASE_URL
@@ -67,10 +65,6 @@ val module = module {
             )
             .build()
             .create(PlacesApi::class.java)
-    }
-
-    single {
-        androidContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     }
 
     factory { (lifecycleOwner: LifecycleOwner, previewView: PreviewView) ->

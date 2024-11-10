@@ -1,6 +1,7 @@
 package com.example.myapplication.presentation
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -37,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.myapplication.PREFS
 import com.example.myapplication.R
 import com.example.myapplication.data.States
 import com.example.myapplication.viewmodel.SearchViewModel
@@ -91,6 +93,14 @@ fun SharedTransitionScope.SearchScreen(
 
     var showInfo by remember {
         mutableStateOf(false)
+    }
+
+    val prefs by remember {
+        mutableStateOf(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
+    }
+
+    LaunchedEffect(Unit) {
+        searchViewModel.checkFirstRun(context.getString(R.string.set_search_points_first_run), prefs)
     }
 
     LaunchedEffect(location) {
@@ -155,9 +165,7 @@ fun SharedTransitionScope.SearchScreen(
                 expanded = isSearching,
                 onExpandedChange = { searchViewModel.onExpandedChange() }
             ) {
-                LaunchedEffect(Unit) {
-                    searchViewModel.checkFirstRun(context.getString(R.string.set_search_points_first_run))
-                }
+
                 Box(
                     modifier = Modifier
                         .padding(bottom = 100.dp)
