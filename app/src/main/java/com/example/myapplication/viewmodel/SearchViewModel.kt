@@ -181,7 +181,7 @@ class SearchViewModel(
                         _states.value = States.Success
                         _foundPlaces.value = list
                     }
-                } catch (e: HttpException) {
+                } catch (_: HttpException) {
                     _states.value = States.Error
                     _error.value = searchPointsError
                     _foundPlaces.value = emptyList()
