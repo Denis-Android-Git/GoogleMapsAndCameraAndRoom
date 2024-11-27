@@ -58,6 +58,7 @@ fun SharedTransitionScope.MapScreen(
     val scope = rememberCoroutineScope()
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
     val showText by mapViewModel.showText.collectAsStateWithLifecycle()
+    val isConnected by mapViewModel.isConnected.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -90,7 +91,7 @@ fun SharedTransitionScope.MapScreen(
         }
     }
 
-    if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
+    if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE && isConnected) {
         LaunchedEffect(key1 = Unit) {
             delay(500)
             mapViewModel.setShowButtonValue(true)

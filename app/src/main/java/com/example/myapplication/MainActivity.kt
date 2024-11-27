@@ -50,6 +50,9 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("savedInstanceState", "$savedInstanceState")
+
         previewView = PreviewView(this)
         enableEdgeToEdge()
         checkPermissions()

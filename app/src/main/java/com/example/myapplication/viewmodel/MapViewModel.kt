@@ -27,7 +27,7 @@ class MapViewModel(
     connectService: ConnectService
 ) : ViewModel() {
 
-    private val isConnected = connectService
+    val isConnected = connectService
         .isConnected
         .stateIn(
             viewModelScope,

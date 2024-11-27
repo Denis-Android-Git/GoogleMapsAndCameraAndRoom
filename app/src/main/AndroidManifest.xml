@@ -31,9 +31,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB7z_VkNvyY__WsJEEwCzT1uFDxMzI__es" />
 
+        <!-- android:configChanges="orientation|uiMode|screenSize|fontScale" -->
+
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|uiMode|screenSize|fontScale"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.MyApplication">
