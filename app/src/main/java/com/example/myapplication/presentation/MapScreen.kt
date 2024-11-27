@@ -165,7 +165,10 @@ fun SharedTransitionScope.MapScreen(
         error?.let {
             TextComponent(
                 text = it,
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .systemBarsPadding()
+
             )
         }
         if (showText) {

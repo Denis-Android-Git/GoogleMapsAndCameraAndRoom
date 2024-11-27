@@ -6,6 +6,7 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.Room
 import com.example.myapplication.data.Camera
+import com.example.myapplication.data.ConnectServiceImpl
 import com.example.myapplication.data.LocationServiceImpl
 import com.example.myapplication.data.api.BASE_URL
 import com.example.myapplication.data.api.RetrofitAndApi.PlacesApi
@@ -13,6 +14,7 @@ import com.example.myapplication.data.db.AppDataBase
 import com.example.myapplication.data.repository.InfoRepository
 import com.example.myapplication.data.repository.PlacesRepository
 import com.example.myapplication.data.repository.SearchRepository
+import com.example.myapplication.domain.ConnectService
 import com.example.myapplication.domain.ILocationService
 import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
@@ -44,6 +46,10 @@ val module = module {
     }
     single<ILocationService> {
         LocationServiceImpl(androidContext(), get())
+    }
+
+    single<ConnectService> {
+        ConnectServiceImpl(androidContext())
     }
 
     single {

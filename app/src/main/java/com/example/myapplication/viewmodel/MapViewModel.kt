@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.DetailInfoDto
+import com.example.myapplication.domain.ConnectService
 import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.GetPlacesUseCase
@@ -14,7 +15,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,19 +23,28 @@ class MapViewModel(
     private val getPlacesUseCase: GetPlacesUseCase,
     private val getInfoUseCase: GetInfoUseCase,
     private val getsSpeedUseCase: GetsSpeedUseCase,
-    private val getLocationUseCase: GetLocationUseCase
+    private val getLocationUseCase: GetLocationUseCase,
+    connectService: ConnectService
 ) : ViewModel() {
-    private var _places = MutableStateFlow<List<Feature>>(emptyList())
-    val places = _places
-        .onStart {
-            Log.d("onStartinitialGetPlaces", "onStart")
-            initialGetPlaces()
-        }
+
+    private val isConnected = connectService
+        .isConnected
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            emptyList()
+            false
         )
+    private var _places = MutableStateFlow<List<Feature>>(emptyList())
+    val places = _places.asStateFlow()
+//        .onStart {
+//            Log.d("onStartinitialGetPlaces", "onStart")
+//            initialGetPlaces()
+//        }
+//        .stateIn(
+//            viewModelScope,
+//            SharingStarted.WhileSubscribed(5000),
+//            emptyList()
+//        )
 
     private var _detailInfo = MutableStateFlow<DetailInfoDto?>(null)
     val detailInfo = _detailInfo.asStateFlow()
@@ -56,6 +66,7 @@ class MapViewModel(
             _showButton.value = value
         }
     }
+
     private val _showText = MutableStateFlow(false)
     val showText = _showText.asStateFlow()
 
@@ -81,17 +92,23 @@ class MapViewModel(
         }
     }
 
-    private fun initialGetPlaces() {
+    init {
+
+        //private fun initialGetPlaces() {
         viewModelScope.launch {
-            try {
-                location.collect { location ->
-                    location?.let {
-                        _places.value = getPlacesUseCase.execute(it.longitude, it.latitude)
+            isConnected.collectLatest {
+                Log.d("isConnectedToInet", "$it")
+                if (it) {
+                    _error.value = null
+                    location.collect { location ->
+                        location?.let {
+                            _places.value = getPlacesUseCase.execute(it.longitude, it.latitude)
+                        }
                     }
+                } else {
+                    _error.value = "No connection"
+                    _places.value = emptyList()
                 }
-            } catch (e: Exception) {
-                coroutineContext.ensureActive()
-                _error.value = "No connection"
             }
         }
     }
@@ -103,7 +120,7 @@ class MapViewModel(
         viewModelScope.launch {
             try {
                 _places.value = getPlacesUseCase.execute(lon, lat)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 coroutineContext.ensureActive()
                 _error.value = "No connection"
             }
@@ -122,7 +139,7 @@ class MapViewModel(
         viewModelScope.launch {
             try {
                 _detailInfo.value = getInfoUseCase.execute(xid)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 coroutineContext.ensureActive()
                 _error.value = "No connection"
             }
