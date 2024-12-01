@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -59,6 +60,7 @@ fun SharedTransitionScope.MapScreen(
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
     val showText by mapViewModel.showText.collectAsStateWithLifecycle()
     val isConnected by mapViewModel.isConnected.collectAsStateWithLifecycle()
+    val buttonText by mapViewModel.buttonText.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -149,7 +151,10 @@ fun SharedTransitionScope.MapScreen(
                         mapViewModel.setShowButtonValue(false)
                     }
                 }) {
-                Text(text = stringResource(R.string.search_here))
+                Text(
+                    text = buttonText,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 

@@ -61,6 +61,9 @@ class MapViewModel(
     private val _showButton = MutableStateFlow(false)
     val showButton = _showButton.asStateFlow()
 
+    private val _buttonText = MutableStateFlow("Искать здесь")
+    val buttonText = _buttonText.asStateFlow()
+
     fun setShowButtonValue(value: Boolean) {
         viewModelScope.launch {
             _showButton.value = value
@@ -93,7 +96,6 @@ class MapViewModel(
     }
 
     init {
-
         //private fun initialGetPlaces() {
         viewModelScope.launch {
             isConnected.collectLatest {
@@ -102,7 +104,20 @@ class MapViewModel(
                     _error.value = null
                     location.collect { location ->
                         location?.let {
-                            _places.value = getPlacesUseCase.execute(it.longitude, it.latitude)
+                            var retries = 0
+                            while (retries < 5) {
+                                try {
+                                    _places.value =
+                                        getPlacesUseCase.execute(it.longitude, it.latitude)
+                                    break
+                                } catch (_: Exception) {
+                                    retries++
+                                    if (retries == 5) {
+                                        _showButton.value = true
+                                        _buttonText.value = "Сервер не отвечает\nПоробовать еще"
+                                    }
+                                }
+                            }
                         }
                     }
                 } else {
@@ -119,6 +134,8 @@ class MapViewModel(
     ) {
         viewModelScope.launch {
             try {
+                _buttonText.value = "Искать здесь"
+                _error.value = null
                 _places.value = getPlacesUseCase.execute(lon, lat)
             } catch (_: Exception) {
                 coroutineContext.ensureActive()
