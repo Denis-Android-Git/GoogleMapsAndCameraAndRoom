@@ -3,6 +3,7 @@ package com.example.myapplication.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.R
 import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.domain.ConnectService
 import com.example.myapplication.domain.usecase.GetInfoUseCase
@@ -55,13 +56,13 @@ class MapViewModel(
     private var _speed = MutableStateFlow<Int?>(null)
     val speed = _speed.asStateFlow()
 
-    private var _error = MutableStateFlow<String?>(null)
+    private var _error = MutableStateFlow<Int?>(null)
     val error = _error.asStateFlow()
 
     private val _showButton = MutableStateFlow(false)
     val showButton = _showButton.asStateFlow()
 
-    private val _buttonText = MutableStateFlow("Искать здесь")
+    private val _buttonText = MutableStateFlow(R.string.search_hear)
     val buttonText = _buttonText.asStateFlow()
 
     fun setShowButtonValue(value: Boolean) {
@@ -114,14 +115,14 @@ class MapViewModel(
                                     retries++
                                     if (retries == 5) {
                                         _showButton.value = true
-                                        _buttonText.value = "Сервер не отвечает\nПоробовать еще"
+                                        _buttonText.value = R.string.server_down
                                     }
                                 }
                             }
                         }
                     }
                 } else {
-                    _error.value = "No connection"
+                    _error.value = R.string.no_connection
                     _places.value = emptyList()
                 }
             }
@@ -134,12 +135,12 @@ class MapViewModel(
     ) {
         viewModelScope.launch {
             try {
-                _buttonText.value = "Искать здесь"
+                _buttonText.value = R.string.search_hear
                 _error.value = null
                 _places.value = getPlacesUseCase.execute(lon, lat)
             } catch (_: Exception) {
                 coroutineContext.ensureActive()
-                _error.value = "No connection"
+                _error.value = R.string.no_connection
             }
         }
     }
@@ -158,7 +159,7 @@ class MapViewModel(
                 _detailInfo.value = getInfoUseCase.execute(xid)
             } catch (_: Exception) {
                 coroutineContext.ensureActive()
-                _error.value = "No connection"
+                _error.value = R.string.no_connection
             }
         }
     }

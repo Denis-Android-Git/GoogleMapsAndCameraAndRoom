@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-01T16:43:44.947679Z">
+        <DropdownSelection timestamp="2024-12-01T16:56:41.319888Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/mac/.android/avd/Uvenco_API_28_1.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=75ff2563" />
             </handle>
           </Target>
         </DropdownSelection>

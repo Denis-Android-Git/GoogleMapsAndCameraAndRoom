@@ -93,7 +93,7 @@ fun SharedTransitionScope.MapScreen(
         }
     }
 
-    if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE && isConnected) {
+    if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = Unit) {
             delay(500)
             mapViewModel.setShowButtonValue(true)
@@ -152,7 +152,7 @@ fun SharedTransitionScope.MapScreen(
                     }
                 }) {
                 Text(
-                    text = buttonText,
+                    text = stringResource(buttonText),
                     textAlign = TextAlign.Center
                 )
             }
@@ -170,7 +170,7 @@ fun SharedTransitionScope.MapScreen(
 
         error?.let {
             TextComponent(
-                text = it,
+                text = stringResource(it),
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .systemBarsPadding()

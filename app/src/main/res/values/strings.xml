@@ -12,4 +12,7 @@
     <string name="km_h">%1$s km/h</string>
     <string name="no_info">Нет информации</string>
     <string name="set_search_points_first_run">Задайте левую нижнюю и правую верхнюю точку квадрата поиска</string>
+    <string name="search_hear">Искать здесь</string>
+    <string name="server_down">Сервер не отвечает\nПоробовать еще</string>
+    <string name="no_connection">No connection</string>
 </resources>
