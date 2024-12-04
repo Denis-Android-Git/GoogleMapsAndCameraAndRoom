@@ -1,7 +1,7 @@
 package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.api.RetrofitAndApi
-import com.example.myapplication.entity.Feature
+import com.example.myapplication.entity.models.Feature
 
 class PlacesRepository(
     private val retrofitAndApi: RetrofitAndApi.PlacesApi

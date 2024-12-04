@@ -1,7 +1,7 @@
 package com.example.myapplication.domain.usecase
 
 import com.example.myapplication.data.repository.PlacesRepository
-import com.example.myapplication.entity.Feature
+import com.example.myapplication.entity.models.Feature
 
 class GetPlacesUseCase(
     private val placesRepository: PlacesRepository

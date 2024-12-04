@@ -10,7 +10,7 @@ import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.GetPlacesUseCase
 import com.example.myapplication.domain.usecase.GetsSpeedUseCase
-import com.example.myapplication.entity.Feature
+import com.example.myapplication.entity.models.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow

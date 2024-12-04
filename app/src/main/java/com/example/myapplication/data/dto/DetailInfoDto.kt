@@ -1,6 +1,11 @@
 package com.example.myapplication.data.dto
 
-import com.example.myapplication.entity.*
+import com.example.myapplication.entity.models.Address
+import com.example.myapplication.entity.models.DetailInfo
+import com.example.myapplication.entity.models.Point
+import com.example.myapplication.entity.models.Preview
+import com.example.myapplication.entity.models.Sources
+import com.example.myapplication.entity.models.WikipediaExtracts
 
 class DetailInfoDto(
     override val address: Address,

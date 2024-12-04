@@ -10,6 +10,7 @@ import com.example.myapplication.data.dto.DetailInfoDto
 import com.example.myapplication.domain.usecase.GetInfoUseCase
 import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.SearchUseCase
+import com.example.myapplication.entity.models.Feature
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +59,7 @@ class SearchViewModel(
     val error = _error.asStateFlow()
 
     private var _foundPlaces =
-        MutableStateFlow<List<com.example.myapplication.entity.Feature>?>(null)
+        MutableStateFlow<List<Feature>?>(null)
     val foundPlaces = _foundPlaces.asStateFlow()
 
     init {
