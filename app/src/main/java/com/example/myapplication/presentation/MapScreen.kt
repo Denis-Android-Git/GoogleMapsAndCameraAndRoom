@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.presentation.custom_progress_bars.TripleOrbitProgressBar
 import com.example.myapplication.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -59,7 +61,6 @@ fun SharedTransitionScope.MapScreen(
     val scope = rememberCoroutineScope()
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
     val showText by mapViewModel.showText.collectAsStateWithLifecycle()
-    val isConnected by mapViewModel.isConnected.collectAsStateWithLifecycle()
     val buttonText by mapViewModel.buttonText.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
@@ -186,6 +187,13 @@ fun SharedTransitionScope.MapScreen(
                     animatedVisibilityScope = animatedVisibilityScope
                 )
             }
+        }
+        if (location == null) {
+            TripleOrbitProgressBar(
+                modifier = Modifier
+                    .size(180.dp)
+                    .align(Alignment.Center)
+            )
         }
     }
 }

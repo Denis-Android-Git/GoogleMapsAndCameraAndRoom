@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.PREFS
 import com.example.myapplication.R
 import com.example.myapplication.data.States
+import com.example.myapplication.presentation.custom_progress_bars.PulseAnimation
 import com.example.myapplication.viewmodel.SearchViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -294,9 +295,9 @@ fun SharedTransitionScope.SearchScreen(
                         }
 
                         is States.Loading -> {
-                            CircularProgressIndicator(
+                            PulseAnimation(
                                 modifier = Modifier.align(Alignment.Center),
-                                trackColor = Color.Red
+                                color = Color.Red
                             )
                         }
 
