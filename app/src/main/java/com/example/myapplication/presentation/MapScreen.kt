@@ -32,7 +32,6 @@ import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.presentation.custom_progress_bars.TripleOrbitProgressBar
 import com.example.myapplication.viewmodel.MapViewModel
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.GoogleMap
@@ -57,7 +56,6 @@ fun SharedTransitionScope.MapScreen(
     val places by mapViewModel.places.collectAsStateWithLifecycle()
     val speed by mapViewModel.speed.collectAsStateWithLifecycle()
     val error by mapViewModel.error.collectAsStateWithLifecycle()
-    //val location by mapViewModel.location.collectAsStateWithLifecycle()
     val cameraPosition by mapViewModel.cameraPosition.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
@@ -90,19 +88,15 @@ fun SharedTransitionScope.MapScreen(
     }
 
     LaunchedEffect(key1 = cameraPosition) {
-        cameraPosition.first?.let {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, cameraPosition.second)
+        cameraPosition?.let {
+            cameraPositionState.position = it
         }
     }
 
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
-        LaunchedEffect(key1 = Unit) {
+        LaunchedEffect(key1 = true) {
             mapViewModel.updateCameraPosition(
-                latLng = LatLng(
-                    cameraPositionState.position.target.latitude,
-                    cameraPositionState.position.target.longitude
-                ),
-                zoom = cameraPositionState.position.zoom
+                cameraPositionState.position
             )
             delay(200)
             mapViewModel.setShowButtonValue(true)

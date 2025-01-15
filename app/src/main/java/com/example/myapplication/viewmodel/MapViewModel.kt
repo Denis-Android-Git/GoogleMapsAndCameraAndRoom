@@ -11,6 +11,7 @@ import com.example.myapplication.domain.usecase.GetLocationUseCase
 import com.example.myapplication.domain.usecase.GetPlacesUseCase
 import com.example.myapplication.domain.usecase.GetsSpeedUseCase
 import com.example.myapplication.entity.models.Feature
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +54,8 @@ class MapViewModel(
     private var _location = MutableStateFlow<LatLng?>(null)
     val location = _location.asStateFlow()
 
-    private var _cameraPosition = MutableStateFlow(Pair<LatLng?, Float>(null, 15f))
+    private var _cameraPosition =
+        MutableStateFlow<CameraPosition?>(null) // (Pair<LatLng?, Float>(null, 15f))
     val cameraPosition = _cameraPosition.asStateFlow()
 
     private var _speed = MutableStateFlow<Int?>(null)
@@ -93,16 +95,20 @@ class MapViewModel(
 
     init {
         viewModelScope.launch {
-            getLocationUseCase.invoke().collect {
-                _cameraPosition.value = (it to 15f)
-                _location.value = it
+            getLocationUseCase.invoke().collect { latLng ->
+                latLng?.let {
+                    val target = LatLng(it.latitude, it.longitude)
+                    val position = CameraPosition(target, 15f, 0f, 0f)
+                    _cameraPosition.value = position
+                    _location.value = it
+                }
             }
         }
     }
 
-    fun updateCameraPosition(latLng: LatLng, zoom: Float) {
+    fun updateCameraPosition(value: CameraPosition) {
         viewModelScope.launch {
-            _cameraPosition.value = (latLng to zoom)
+            _cameraPosition.value = value
         }
     }
 
