@@ -48,6 +48,15 @@ class MapViewModel(
 //            emptyList()
 //        )
 
+    private var _isFirstRun = MutableStateFlow(true)
+    val isFirstRun = _isFirstRun.asStateFlow()
+
+    fun updateIsFirstRun(value: Boolean) {
+        viewModelScope.launch {
+            _isFirstRun.value = value
+        }
+    }
+
     private var _detailInfo = MutableStateFlow<DetailInfoDto?>(null)
     val detailInfo = _detailInfo.asStateFlow()
 

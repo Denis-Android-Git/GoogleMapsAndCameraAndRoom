@@ -61,6 +61,7 @@ fun SharedTransitionScope.MapScreen(
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
     val showText by mapViewModel.showText.collectAsStateWithLifecycle()
     val buttonText by mapViewModel.buttonText.collectAsStateWithLifecycle()
+    val isFirstRun by mapViewModel.isFirstRun.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -90,6 +91,10 @@ fun SharedTransitionScope.MapScreen(
     LaunchedEffect(key1 = cameraPosition) {
         cameraPosition?.let {
             cameraPositionState.position = it
+            delay(500)
+            if (isFirstRun) {
+                mapViewModel.updateIsFirstRun(false)
+            }
         }
     }
 
@@ -100,9 +105,11 @@ fun SharedTransitionScope.MapScreen(
         }
     }
     LaunchedEffect(key1 = cameraPositionState.isMoving) {
-        mapViewModel.updateCameraPosition(
-            cameraPositionState.position
-        )
+        if (!isFirstRun) {
+            mapViewModel.updateCameraPosition(
+                cameraPositionState.position
+            )
+        }
     }
     Box(
         modifier = Modifier
