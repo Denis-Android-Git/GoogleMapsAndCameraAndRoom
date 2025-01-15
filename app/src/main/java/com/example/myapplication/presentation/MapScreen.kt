@@ -95,12 +95,14 @@ fun SharedTransitionScope.MapScreen(
 
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = true) {
-            mapViewModel.updateCameraPosition(
-                cameraPositionState.position
-            )
             delay(200)
             mapViewModel.setShowButtonValue(true)
         }
+    }
+    LaunchedEffect(key1 = cameraPositionState.isMoving) {
+        mapViewModel.updateCameraPosition(
+            cameraPositionState.position
+        )
     }
     Box(
         modifier = Modifier
