@@ -57,7 +57,8 @@ fun SharedTransitionScope.MapScreen(
     val places by mapViewModel.places.collectAsStateWithLifecycle()
     val speed by mapViewModel.speed.collectAsStateWithLifecycle()
     val error by mapViewModel.error.collectAsStateWithLifecycle()
-    val location by mapViewModel.location.collectAsStateWithLifecycle()
+    //val location by mapViewModel.location.collectAsStateWithLifecycle()
+    val cameraPosition by mapViewModel.cameraPosition.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val showButton by mapViewModel.showButton.collectAsStateWithLifecycle()
     val showText by mapViewModel.showText.collectAsStateWithLifecycle()
@@ -88,15 +89,21 @@ fun SharedTransitionScope.MapScreen(
         }
     }
 
-    LaunchedEffect(key1 = location) {
-        location?.let {
+    LaunchedEffect(key1 = cameraPosition) {
+        cameraPosition?.let {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
         }
     }
 
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = Unit) {
-            delay(500)
+            delay(200)
+            mapViewModel.updateCameraPosition(
+                LatLng(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude
+                )
+            )
             mapViewModel.setShowButtonValue(true)
         }
     }
@@ -188,7 +195,7 @@ fun SharedTransitionScope.MapScreen(
                 )
             }
         }
-        if (location == null) {
+        if (cameraPosition == null) {
             TripleOrbitProgressBar(
                 modifier = Modifier
                     .size(180.dp)

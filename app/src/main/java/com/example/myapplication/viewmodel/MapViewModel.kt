@@ -53,6 +53,9 @@ class MapViewModel(
     private var _location = MutableStateFlow<LatLng?>(null)
     val location = _location.asStateFlow()
 
+    private var _cameraPosition = MutableStateFlow<LatLng?>(null)
+    val cameraPosition = _cameraPosition.asStateFlow()
+
     private var _speed = MutableStateFlow<Int?>(null)
     val speed = _speed.asStateFlow()
 
@@ -91,8 +94,15 @@ class MapViewModel(
     init {
         viewModelScope.launch {
             getLocationUseCase.invoke().collect {
+                _cameraPosition.value = it
                 _location.value = it
             }
+        }
+    }
+
+    fun updateCameraPosition(value: LatLng) {
+        viewModelScope.launch {
+            _cameraPosition.value = value
         }
     }
 

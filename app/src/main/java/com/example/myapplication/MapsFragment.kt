@@ -38,16 +38,16 @@ class MapsFragment : Fragment() {
                 }
             }
         }
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mapViewModel.location.collect {
-                    if (it != null) {
-                        mapViewModel.getPlaces(it.longitude, it.latitude)
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
-                    }
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                mapViewModel.location.collect {
+//                    if (it != null) {
+//                        mapViewModel.getPlaces(it.longitude, it.latitude)
+//                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
+//                    }
+//                }
+//            }
+//        }
     }
 
     override fun onCreateView(

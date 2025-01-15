@@ -70,6 +70,7 @@ class LocationServiceImpl(
         val request = LocationRequest.Builder(1)
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             .build()
+
         locationClient.requestLocationUpdates(
             request,
             locationCallback,
