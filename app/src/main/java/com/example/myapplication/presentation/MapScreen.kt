@@ -90,20 +90,21 @@ fun SharedTransitionScope.MapScreen(
     }
 
     LaunchedEffect(key1 = cameraPosition) {
-        cameraPosition?.let {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
+        cameraPosition.first?.let {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, cameraPosition.second)
         }
     }
 
     if (cameraPositionState.isMoving && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
         LaunchedEffect(key1 = Unit) {
-            delay(200)
             mapViewModel.updateCameraPosition(
-                LatLng(
+                latLng = LatLng(
                     cameraPositionState.position.target.latitude,
                     cameraPositionState.position.target.longitude
-                )
+                ),
+                zoom = cameraPositionState.position.zoom
             )
+            delay(200)
             mapViewModel.setShowButtonValue(true)
         }
     }
