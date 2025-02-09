@@ -64,7 +64,7 @@ class MapViewModel(
     val location = _location.asStateFlow()
 
     private var _cameraPosition =
-        MutableStateFlow<CameraPosition?>(null) // (Pair<LatLng?, Float>(null, 15f))
+        MutableStateFlow<CameraPosition?>(null)
     val cameraPosition = _cameraPosition.asStateFlow()
 
     private var _speed = MutableStateFlow<Int?>(null)

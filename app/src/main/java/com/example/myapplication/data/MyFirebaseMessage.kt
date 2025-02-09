@@ -87,6 +87,7 @@ class MyFirebaseMessage : FirebaseMessagingService() {
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.notification)
             .setContentTitle("Использование маркеров")
+            .setContentText("Нажмите на маркер и на его...")
             .setStyle(bigTextStyle)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
