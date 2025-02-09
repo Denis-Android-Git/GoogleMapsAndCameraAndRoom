@@ -1,15 +1,23 @@
 package com.example.myapplication.presentation
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,31 +67,29 @@ fun LikedScreen(
             if (placeList.isEmpty()) {
                 TextContent()
             } else {
-                LazyRow(
-                    //rows = GridCells.Fixed(1),
-                    //rows = GridCells.Adaptive(minSize = 50.dp),
-                    //verticalArrangement = Arrangement.spacedBy(10.dp),
-                    //horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    //contentPadding = WindowInsets.systemBars.asPaddingValues()//PaddingValues(horizontal = 40.dp)
+                LazyVerticalGrid (
+                    columns = GridCells.Fixed(3),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = WindowInsets.systemBars.asPaddingValues()//PaddingValues(horizontal = 40.dp)
                 ) {
-                    items(placeList) {
-//                        key = {
-//                            //it.id
-//                        })
-                            place ->
-                        Text(
-//                            modifier = Modifier.animateItem(
-//                                fadeInSpec = null,
-//                                fadeOutSpec = null,
-//                                placementSpec = //tween(durationMillis = 650)
-//                                spring(
-//                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-//                                    stiffness = Spring.StiffnessLow
-//                                )
-//                            ),
-                            text = place.picture!!,
-//                            navController = navController,
-//                            dbViewModel = viewModel,
+                    items(placeList,
+                        key = {
+                            it.id
+                        }) { place ->
+                        PhotoItem(
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = null,
+                                fadeOutSpec = null,
+                                placementSpec = //tween(durationMillis = 650)
+                                spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
+                            place = place,
+                            navController = navController,
+                            dbViewModel = viewModel,
 //                            modifier = Modifier
                         )
                     }

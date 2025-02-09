@@ -42,7 +42,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -56,8 +56,9 @@ fun SharedTransitionScope.MapScreen(
     myFirebaseMessage: MyFirebaseMessage = MyFirebaseMessage()
 ) {
     val context = LocalContext.current
-    myFirebaseMessage.createNotification(context)
-
+    LaunchedEffect(Unit) {
+        myFirebaseMessage.createNotification(context)
+    }
     val info by mapViewModel.detailInfo.collectAsStateWithLifecycle()
     val places by mapViewModel.places.collectAsStateWithLifecycle()
     val speed by mapViewModel.speed.collectAsStateWithLifecycle()
@@ -134,7 +135,7 @@ fun SharedTransitionScope.MapScreen(
                     LatLng(place.geometry.coordinates[1], place.geometry.coordinates[0])
 
                 MarkerInfoWindowContent(
-                    state = rememberMarkerState(position = position),
+                    state = rememberUpdatedMarkerState(position = position),
                     onInfoWindowClick = {
                         mapViewModel.getInfo(place.properties.xid)
                         if (place.properties.name.isNotEmpty()) {
