@@ -24,14 +24,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.myapplication.R
-import com.example.myapplication.data.MyFirebaseMessage
 import com.example.myapplication.presentation.custom_progress_bars.TripleOrbitProgressBar
 import com.example.myapplication.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -53,12 +51,12 @@ fun SharedTransitionScope.MapScreen(
     mapViewModel: MapViewModel,
     navController: NavController,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    myFirebaseMessage: MyFirebaseMessage = MyFirebaseMessage()
+    //myFirebaseMessage: MyFirebaseMessage = MyFirebaseMessage()
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        myFirebaseMessage.createNotification(context)
-    }
+//    val context = LocalContext.current
+//    LaunchedEffect(Unit) {
+//        myFirebaseMessage.createNotification(context)
+//    }
     val info by mapViewModel.detailInfo.collectAsStateWithLifecycle()
     val places by mapViewModel.places.collectAsStateWithLifecycle()
     val speed by mapViewModel.speed.collectAsStateWithLifecycle()
@@ -121,7 +119,6 @@ fun SharedTransitionScope.MapScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 100.dp)
     ) {
         GoogleMap(
             contentPadding = PaddingValues(top = 20.dp),

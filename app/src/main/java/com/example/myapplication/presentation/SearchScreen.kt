@@ -52,7 +52,7 @@ import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -100,7 +100,10 @@ fun SharedTransitionScope.SearchScreen(
     }
 
     LaunchedEffect(Unit) {
-        searchViewModel.checkFirstRun(context.getString(R.string.set_search_points_first_run), prefs)
+        searchViewModel.checkFirstRun(
+            context.getString(R.string.set_search_points_first_run),
+            prefs
+        )
     }
 
     LaunchedEffect(location) {
@@ -168,7 +171,6 @@ fun SharedTransitionScope.SearchScreen(
 
                 Box(
                     modifier = Modifier
-                        .padding(bottom = 100.dp)
                         .fillMaxSize()
                 ) {
 
@@ -203,7 +205,7 @@ fun SharedTransitionScope.SearchScreen(
                         foundPlaces?.let {
                             it.map { place ->
                                 MarkerInfoWindowContent(
-                                    state = rememberMarkerState(
+                                    state = rememberUpdatedMarkerState(
                                         position = LatLng(
                                             place.geometry.coordinates[1],
                                             place.geometry.coordinates[0]

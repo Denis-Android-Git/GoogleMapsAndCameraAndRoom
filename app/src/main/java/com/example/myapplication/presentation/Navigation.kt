@@ -5,6 +5,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,6 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun Navigation(
+    modifier: Modifier,
     intentViewModel: IntentViewModel,
     navController: NavHostController,
     mapViewModel: MapViewModel = koinViewModel(),
@@ -36,7 +38,7 @@ fun Navigation(
 
     SharedTransitionLayout {
         NavHost(
-            //modifier = modifier,
+            modifier = modifier,
             navController = navController, startDestination = Destinations.MapScreen.routes
         ) {
             composable(

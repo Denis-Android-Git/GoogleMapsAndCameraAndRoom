@@ -2,7 +2,6 @@ package com.example.myapplication.presentation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +20,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -60,15 +59,14 @@ fun MapScreen2(
     GoogleMap(
         contentPadding = PaddingValues(top = 20.dp),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 100.dp),
+            .fillMaxSize(),
         uiSettings = uiSettings,
         properties = properties,
         cameraPositionState = cameraPositionState
     ) {
         place?.let { placeInfo ->
             MarkerInfoWindowContent(
-                state = rememberMarkerState(
+                state = rememberUpdatedMarkerState(
                     position = LatLng(
                         placeInfo.point.lat,
                         placeInfo.point.lon

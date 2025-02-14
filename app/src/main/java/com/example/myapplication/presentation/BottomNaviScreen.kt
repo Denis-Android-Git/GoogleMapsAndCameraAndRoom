@@ -3,6 +3,7 @@ package com.example.myapplication.presentation
 import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
@@ -50,7 +51,7 @@ fun BottomNaviScreen(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.height(100.dp),
+                modifier = Modifier.height(60.dp),
             ) {
                 bottomItems.forEachIndexed { _, bottomItem ->
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -87,8 +88,9 @@ fun BottomNaviScreen(
                 }
             }
         }
-    ) {
+    ) { padding ->
         Navigation(
+            modifier = Modifier.padding(padding),
             navController = navController,
             intentViewModel = viewModel
         )
