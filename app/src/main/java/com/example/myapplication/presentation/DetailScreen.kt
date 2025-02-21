@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -62,6 +63,8 @@ fun SharedTransitionScope.DetailScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     detailScreenViewModel: DetailScreenViewModel = koinViewModel()
 ) {
+    detailScreenViewModel.image.value = image
+    Log.d("image", image)
     var color by remember {
         mutableStateOf(Color.Transparent)
     }
@@ -70,7 +73,8 @@ fun SharedTransitionScope.DetailScreen(
         delay(1000)
         color = Color.Gray
     }
-    detailScreenViewModel.image.value = image
+    Log.d("detailScreenViewModel_image_value", detailScreenViewModel.image.value)
+
     val showDelete = detailScreenViewModel.showDelete.value
     val photo by viewModel.photo.collectAsStateWithLifecycle()
 
